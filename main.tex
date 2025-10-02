@@ -1,0 +1,62 @@
+\documentclass{article} 
+
+\input{setup/a1.setup.tex}
+
+\addbibresource{references.bib}
+%\addbibresource{setup/d1.ext_references.bib}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{decorations.pathmorphing}
+\usetikzlibrary{shapes.geometric}
+\tikzset{->-/.style={
+		decoration={
+			markings,
+			mark={at position .5 with {\pgftransformscale{2}\arrow{>}}}
+		},
+		postaction={decorate}
+	}
+}
+\tikzset{
+	square/.style={
+		regular polygon,
+		regular polygon sides=4,
+		minimum size=0.5cm,
+		draw
+	},
+	triangle/.style={
+		regular polygon,
+		regular polygon sides=3,
+		minimum size=0.5cm,scale=0.7,
+		draw
+	}
+}
+\tikzstyle{snake it}=[decorate,decoration={snake, #1,}]
+\usetikzlibrary{angles,quotes,calc,positioning} % Load the calc library
+\usepackage{cancel}
+%\bibliography{references.bib}
+\DeclareDocumentCommand{\quote}{m}{%
+	``#1''%
+}
+\begin{document}
+% \setcounter{footnote}{-1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\input{parts/0.Info.tex}
+\input{parts/1.Intro.tex}
+%\input{parts/2.1D_NonVertical.tex}
+%\input{parts/3.1D_Vertical.tex}
+%
+\printbibliography
+\appendix\newpage
+\crefalias{section}{appendix}
+\crefname{appendix}{Appendix}{Appendices}
+%
+%\input{parts/A.ssb_inverse.tex}
+%\input{parts/B.Derivative_Jb_bu.tex}
+
+% TODO: Add more metrics?
+% TODO: Add anechoic simulation?
+\end{document}
+

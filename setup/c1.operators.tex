@@ -1,0 +1,55 @@
+%% Requires:
+% xparse
+
+\let\mrm\symup
+\def\mtimes{\mathbin{\scalebox{0.7}{$\times$}}}
+\NewDocumentCommand{\opt}{m}{%
+	{#1}^{\star}%
+}
+\NewDocumentCommand{\sz}{s m m}{%
+	\IfBooleanTF{#1}{%
+		\bts{{#2} \mtimes {#3}}%
+	}{%
+		{#2} \mtimes {#3}%
+	}%
+}
+\def\lint{\int\limits}
+
+
+\NewDocumentCommand{\el}{m g O{m} o}{%
+	\bts{#1}_{%
+		\IfValueTF{#4}{%
+			(#3\IfValueT{#2}{_{#2}},#4\IfValueT{#2}{_{#2}})%
+		}{%
+			#3\IfValueT{#2}{_{#2}}%
+		}        
+	}
+}
+
+\DeclareMathOperator{\obs}{obs}
+
+\NewDocumentCommand{\qt}{m}{``#1''}
+
+\NewDocumentCommand{\pdv}{s m m o}{%
+	\IfBooleanTF{#1}{%
+		\tfrac{\partial\IfValueT{#4}{^#4} #2}{\partial #3\IfValueT{#4}{^#4}}%
+	}{%
+		\frac{\partial\IfValueT{#4}{^#4} #2}{\partial #3\IfValueT{#4}{^#4}}%
+	}
+}
+\NewDocumentCommand{\dv}{s m m o}{%
+	\IfBooleanTF{#1}{%
+		\tfrac{\dd\IfValueT{#4}{^#4} #2}{\dd #3\IfValueT{#4}{^#4}}%
+	}{%
+		\frac{\dd\IfValueT{#4}{^#4} #2}{\dd #3\IfValueT{#4}{^#4}}%
+	}
+}
+
+\DeclareMathOperator{\Rank}{rank}
+\NewDocumentCommand{\rank}{m}{%
+	\Rank\pts{#1}%
+}
+\DeclareMathOperator{\Diag}{diag}
+\NewDocumentCommand{\diag}{m}{%
+	\Diag\pts{#1}%
+}

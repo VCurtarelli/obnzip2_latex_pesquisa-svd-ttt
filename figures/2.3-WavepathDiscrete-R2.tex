@@ -1,0 +1,69 @@
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[x=1.5cm,y=3.5cm]
+		\coordinate (tl) at (-3, 2);
+		\coordinate (tr) at (3, 2);
+		\coordinate (bl) at (-3, -2);
+		\coordinate (br) at (3, -2);
+		\coordinate (cc) at (0,0);
+		\coordinate (tc) at (0,6);
+		\coordinate (bc) at (0,-2);
+		\coordinate (cl) at (-3, 0);
+		\coordinate (cr) at (3,0);
+		%
+		\coordinate (source) at ($(bl)!0.95!(br)$);
+		\coordinate (r1) at ($(bl)!0.1!(tl)$);
+		\coordinate (r2) at ($(bl)!0.3!(tl)$);
+		%
+		\coordinate (p0) at ($(tr)!0.6!(br)$);
+		\coordinate (p1) at ($(tr)!0.8!(br)$);
+		\coordinate (ti) at (-0.4,-0.4); % top interface
+		\coordinate (bi) at (-0.4,-2); % bottom interface
+		\coordinate (ci) at (-0.4,-1.2); % center interface
+		%
+		\draw[gray,fill=none] ($(tl)!0.6!(bl)$) rectangle (br);
+		%% Draw colored rectangles
+		\foreach \x in {0.8, 0.6}
+		{
+			\coordinate (pr) at ($(tr)!\x!(br)$); % Point-right
+			\pgfmathparse{\x+0.2} \let\y=\pgfmathresult 
+			\coordinate (pl) at ($(tl)!\y!(bl)$); %Point-left
+			\pgfmathparse{\x * 50} \let\y=\pgfmathresult % Color calculation
+			\draw[gray,very thin,fill=gray!\y!white] (pl) rectangle (pr);
+		}
+		%% Draw wave paths
+		%		\draw [->-,thick] (source) to (r1);
+		%
+		\draw [->-,thick] (source) to (ci) to (r2);
+		%% Draw receivers and sources
+		\node[square,fill=blue!70!black] () at (r2) {};
+		\node[left=6pt of r2] () {$r_2$};
+		%
+		\node[triangle,fill=green!70!black] () at (source) {};
+		\node[below=6pt of source] () {$s$};
+		%% Draw distances
+		\draw[<->,thin,gray]
+		([xshift=0.2cm]p1) -- ([xshift=0.2cm]br) node[pos=0.5,anchor=west,black] {$h_1$};
+		%
+		\draw[<->,thin,gray]
+		([xshift=0.2cm]p0) -- ([xshift=0.2cm]p1) node[pos=0.5,anchor=west,black] {$h_2$};
+		%
+		\draw[<->,thin,gray]
+		([xshift=0.15cm,yshift=0.15cm]ci) -- ([xshift=0.15cm,,yshift=0.15cm]source)
+		node[pos=0.5,anchor=south west,black] {$d_{2,1}$};		
+		%
+		\draw[<->,thin,gray]
+		([xshift=-0.15cm,yshift=-0.15cm]ci) -- ([xshift=-0.15cm,,yshift=-0.15cm]r2)
+		node[pos=0.2,anchor=north east,black] {$d_{2,2}$};		
+		%
+		\draw[<->,thin,gray] ([xshift=-0.25cm,yshift=-0.6cm]source) -- ([xshift=-0.25cm,yshift=-0.6cm]r2) node[pos=0.4, anchor=north east,black] {$d_{2}$};
+		%% Draw angles
+		\draw[dashed, semithick]  (bi) -- (ti);
+		\draw pic[draw,angle radius=0.5cm, "$\theta_1$", angle eccentricity=1.8] {angle=bi--ci--source};
+		%
+		\draw pic[draw,angle radius=0.5cm, "$\theta_2$", angle eccentricity=1.8] {angle=ti--ci--r2};
+		
+	\end{tikzpicture}
+	\caption{Wave path in a heterogeneous and discrete environment, for the second receiver.}
+	\label{fig:sec2:wavepaths_heterogeneous-variable_environment:fig3}
+\end{figure}

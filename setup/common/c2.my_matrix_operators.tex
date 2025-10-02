@@ -1,0 +1,68 @@
+\makeatletter
+\newcommand{\Sym@tr}{\symsfup{T}}
+\newcommand{\Sym@he}{\symsfup{H}}
+\newcommand{\tr}[1]{#1^{\Sym@tr}}
+\newcommand{\he}[1]{#1^{\Sym@he}}
+%
+\NewDocumentCommand{\Sym@inv}{O{1}}{
+	\myminus\mkern-2mu \symsfup{#1}
+}
+\NewDocumentCommand{\inv}{s O{1} m}{
+	\IfBooleanTF{#1}{
+		\bts{#3}^{\Sym@inv[#2]}
+	}{
+		#3^{\Sym@inv[#2]}
+	}
+}
+\NewDocumentCommand{\invt}{m}{
+	#1^{\Sym@inv[T]}
+}
+%
+\NewDocumentCommand{\Sym@pinv}{O{}}{%
+	\cross%
+}
+\def\cross{\dagger}
+\NewDocumentCommand{\pinv}{s O{} m}{
+	\IfBooleanTF{#1}{
+		\bts{#3}^{\Sym@pinv_{#2}}
+	}{
+		#3^{\Sym@pinv_{#2}}
+	}
+}
+\NewDocumentCommand{\pinvR}{s m}{
+	\IfBooleanTF{#1}{
+		\pinv*[R]{#2}
+	}{
+		\pinv[R]{#2}
+	}
+}
+\NewDocumentCommand{\pinvL}{s m}{
+	\IfBooleanTF{#1}{
+		\pinv*[L]{#2}
+	}{
+		\pinv[L]{#2}
+	}
+}
+
+\LetLtxMacro{\Sqrt}{\sqrt}
+\RenewDocumentCommand{\sqrt}{m}{
+	#1^{\nfrac{1}{2}}
+}
+%\NewDocumentCommand{\isqrt}{m}{
+%	\inv[\nfrac{1}{2}]{#1}
+%}
+%
+\newcommand{\Sym@spr}{'}
+\let\p\Sym@spr
+\makeatother
+
+
+\newcommand{\myminus}{\mathpalette\domyminus\relax}%
+\newcommand{\domyminus}[2]{%
+	\scalebox{0.7}[1]{$#1\,\symsfup{-}$}
+}%
+
+\DeclareMathOperator{\Trace}{tr}
+\NewDocumentCommand{\trace}{m}{%
+	\Trace\pts{#1}%
+}

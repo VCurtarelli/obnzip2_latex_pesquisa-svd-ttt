@@ -1,0 +1,412 @@
+\section{1-D Vertical Scenario}
+
+In this scenario, we now assume the source and receivers to be vertically aligned, lying on the same vertical line. This simplifies the mathematical problem, as there is no horizontal travel of the wave's direct path, and therefore no refraction.
+
+\subsection{Discrete method}
+
+Considering the discrete method, the vertical alignment implies that $\sigma_1 = \sigma_m = 0$. In this case, the equations from \cref{subsec:sec3:discrete_method} simplify drastically to
+\begin{equation}
+	t_m = \frac{h_m}{2c_m} + \sum_{i=1}^{m-1} \frac{h_i}{c_i},
+\end{equation}
+from which we have that
+\begin{equation}
+	c_m = \frac{h_m}{2\pts{t_m + \sum_{i=1}^{m-1} \frac{h_i}{c_i}}}.
+\end{equation}
+
+This leads to a direct estimation of $c_m$ instead of an iterative one, allowing a straightforward solution to the problem.
+
+%\subsubsection{Velocity interpolation}
+%
+%Given the velocity $c_m$ at the measured heights, it's possible to estimate a continuous $c(y)$ such that
+%\begin{equation}
+%	c(y_m) = c_m
+%\end{equation}
+%where $y_m$ is the height of the $m$-th receiver, measured from the ocean bottom/source height. Note that $y_m \neq h_m$, as $h_m$ is the \quote{vertical width} of the layer corresponding to the $m$-th receiver.
+%
+%%By assuming $c(y)$ as a polynomial function,
+
+\subsection{Polynomial fitting}
+Considering the verticality assumed, there is no horizontal travel, and our problem becomes
+\begin{equation}
+	\dv{p_{y,m}}{t} = c\pts{p_{y,m}},
+\end{equation}
+
+Through separation of variables,
+\begin{equation}
+	\frac{\dd p_{y,m}}{c\pts{p_{y,m}}} = \dd t,
+\end{equation}
+and, integrating both sides,
+\begin{equation}
+	\int \frac{1}{c\pts{p_{y,m}}} \dd p_{y,m} = t + t_0,
+\end{equation}
+which is exactly the problem at hand: the integral of the slowness over the distance, gives the time. Using the polynomial assumption, and writing $c(y)$ as a function of its roots such that
+\begin{equation}
+	c(y) = A_0 \cdot \prod_{m=1}^{N-1} (y - r_m),
+\end{equation}
+where $r_n$ are the $N$ roots of $c(y)$; we then have
+\begin{equation}
+	t + t_0 = \int \frac{1}{A_0 \prod_{n=1}^{N-1} (p_y-r_n)} \dd p_y .
+\end{equation}
+
+Assuming no repeated roots, through partial fractions we get
+\begin{equation}
+	\frac{1}{A_0 \prod_{n=1}^{N-1} (p_y-r_n)} = \sum_{n=1}^{N-1} \frac {C_n}{p_y - r_n},
+\end{equation}
+where
+\begin{equation}
+	C_j = \frac{1}{A_0} \prod_{\substack{n=1\\n\neq j}}^{N-1} \frac{1}{r_j - r_n}.
+\end{equation}
+
+Thus,
+\begin{equation}
+	\begin{split}t 
+		& = \int_{0}^{y_m} \sum_{n=1}^{N-1} \frac{C_n}{p_y - r_n} \dd p_y \\
+%		& = \sum_{n=1}^{N-1} C_n \ln\pts{y_m - r_n} \\
+		& = \ln\pts{\prod_{n=1}^{N-1} \pts{y_m - r_n} ^{C_n}} - \ln\pts{\prod_{n=1}^{N-1} \pts{-r_n} ^{C_n}}.
+	\end{split}
+\end{equation}
+
+Since the signal is produced at the source, and taking this to be at the origin of our system of coordinates, then $t(y_m=0) = 0$ for all $m$. Given the measurements on all $N$ sensors, along with their positions, this gives us a system with $N$ equations -- one for each measurement -- and $N$ variables (all $N-1$ roots of $c(y)$, along with $A_0$). Note that the parameters $C_n$ are strictly dependent on $r_n$ and $A_0$.
+
+Having these roots and the $A_0$ parameter, one can reconstruct the SSP $c(y)$.
+
+\subsection{Inverse polynomial fitting}
+
+Again taking the verticality of the problem, implying $\lambda_1 = \lambda_m = 0$, our problem simplifies to
+\begin{equation}
+	s(p_{y,m}) \dd p_{y,m} = \dd t.
+	\label{eq:sec3:vc_ipf:differential_equation}
+\end{equation}
+
+%We denote $D(y) = s^2(y)$, such that
+%\begin{equation}
+%	D(y) = \sum_{n=0}^{N-1} \sum_{\nu=0}^{N-1}  b_n b_\nu y^{n+\nu}
+%	\label{eq:sec3:vc_ipf:func_D(y)}
+%\end{equation}
+
+Integrating \cref{eq:sec3:vc_ipf:differential_equation} from $0$ to $y_m$ with the polynomial slowness from \cref{eq:sec2:polynomial_slowness}, we achieve
+\begin{equation}
+	\sum_{n=0}^{N-1} \frac{b_n}{n+1}y_m^{n+1} = t + t_0,
+	\label{eq:sec3:vc_ipf:func_t(hm)}
+\end{equation}
+where $y_m$ is the height of the $m$-th receiver. This is a linear problem with $N$ variables -- the $b_n$ parameters of the polynomial $s(y)$ -- and $N$ equations, one for each sensor. The contour condition that the source is at height $y=0$ and the time is emitted at $t=0$, lead to $t_0 = 0$.
+
+We can write \cref{eq:sec3:vc_ipf:func_t(hm)} in vector form, such that
+\begin{equation}
+	\bvh{m} \bvb = t_m
+\end{equation}
+where $\bvh{m}$ is a row-vector and $\bvb$ is a column-vector,
+\begin{subequations}
+	\begin{gather}
+		{\bvh{m}} = \begin{bmatrix}
+				1 & y_m & \cdots & y_m^{N-1}
+			\end{bmatrix}, \\
+	{\bvb} = \tr{\begin{bmatrix}
+			b_0 & b_1 & \cdots & b_{N-1}
+		\end{bmatrix}}.
+	\end{gather}
+\end{subequations}
+
+With this, we can write our problem in matrix form,
+\begin{equation}
+	\bvH \bvb = \bvt,
+\end{equation}
+in which $\bvH$ is the vertical stacking of the row-vectors $\bvh{m}$, and $\bvt$ is a column-vector of the times,
+\begin{subequations}
+	\begin{gather}
+		\bvH = \tr{\begin{bmatrix}
+				\tr{\bvh{1}} & \tr{\bvh{2}} & \cdots & \tr{\bvh{N}}
+		\end{bmatrix}}, \\
+		\bvt = \tr{\begin{bmatrix}
+				t_1 & t_2 & \cdots & t_N
+		\end{bmatrix}}.
+	\end{gather}
+\end{subequations}
+
+This problem can be solved directly, resulting in
+\begin{equation}
+	\bvb = \inv{\bvH} \bvt,
+\end{equation}
+where $\bvb$ is the desired vector of parameters that control the fitted polynomial of $s(y)$.
+
+\subsection{Spline interpolation}
+
+Another possibility is to use Spline interpolation. That is, between any two measurements at $(y_m,t_m)$ and $(y_{m+1},t_{m+1})$, we fit a cubic function $q_m(y)$ with domain $[y_{m-1},y_{m})$ such that
+\begin{subequations}
+	\begin{gather}
+		q_m(y_m) = t_m, \label{eq:sec3:spline:conditions:eq1} \\
+		q_m(y_{m+1}) = t_{m+1},  \label{eq:sec3:spline:conditions:eq2} \\
+		q_m'(y_m) = q_{m-1}'(y_m),  \label{eq:sec3:spline:conditions:eq3} \\
+		q_m''(y_m) = q_{m-1}''(y_m),  \label{eq:sec3:spline:conditions:eq4} \\
+		q_1''(0) = q_N''(t_N) = 0. \label{eq:sec3:spline:conditions:eq5}
+	\end{gather}
+\end{subequations}
+
+These conditions result in $q(y)$ --  the composition of all Splines $q_m(y)$ -- being continuous (\cref{eq:sec3:spline:conditions:eq1,eq:sec3:spline:conditions:eq2}), with a continuous first (\cref{eq:sec3:spline:conditions:eq3}) and second (\cref{eq:sec3:spline:conditions:eq4}) derivatives. We also impose that $q_1''(0) = q_N''(y_N) = 0$, meaning that the second derivative at the end-points is zero.
+
+The use of Splines, or piece-wise interpolation, is advantageous compared to a direct interpolation through the points, since interpolating $N$ points would result in a $N-1$-degree polynomial, which is prone to high-frequency oscillations due to Runge's phenomenon.
+
+Thus, the problem has $4N$ parameters ($4$ per Spline, with $N$ Splines), an $4N$ equations ($2N$ from continuity + $2N-2$ from first- and second-derivative continuities + $2$ from end-point conditions).
+
+%By taking that $t_0 = 0$ and $h_0 = 0$ -- that is, the origin of the time-height coordinate system is at the sensor -- we straightforwardly get $a_1 = c_1 = 0$. Using that $q_1''(t_1) = q_2''(t_1)$, we have that
+%\begin{equation}
+%	d_1 = \frac{c_2}{3t_1} + d_2
+%\end{equation}
+%and knowing that $q_1(t_1) = h_1$ leads to
+%\begin{equation}
+%	b_1 = \frac{h_1}{t_1} - d_1 t_1^2
+%\end{equation}
+%
+%This allows us to manually calculate 4 parameters $[a_1,b_1,c_1,d_1]$, thus allowing us to eliminate four equations; namely, $q_1(t_0) = 0$, $q_1(t_1) = h_1$, $q_1''(t_0) = 0$ and $q_1''(t_1) = q_2''(t_1)$. With this, the problem can be defined matricially as
+
+The problem can be therefore defined as
+\begin{subequations}
+	\begin{gather}
+		\begin{bmatrix}
+			\bvy{0} 	& \bv0 		& \bv0 		& \cdots & \bv0 		 & \bv0 		\\
+			\bvy{1} 	& \bv0 		& \bv0 		& \cdots & \bv0 		 & \bv0 		\\
+			\bv0 		& \bvy{1} 	& \bv0 		& \cdots & \bv0 		 & \bv0 		\\
+			\bv0 		& \bvy{2} 	& \bv0 		& \cdots & \bv0 		 & \bv0 		\\
+			\vdots 	& \vdots 	& \vdots 	& \ddots & \vdots 	 & \vdots 	\\
+			\bv0 		& \bv0 		& \bv0 		& \cdots & \bv0		 & \bvy{N-1}\\
+			\bv0 		& \bv0 		& \bv0 		& \cdots & \bv0 		 & \bvy{N}	\\[0.3cm]
+			\bvy{1}' & -\bvy{2}' & \bv0 		& \cdots & \bv0 		 & \bv0		\\
+			\bv0 		& \bvy{2}' 	& -\bvy{3}' & \cdots & \bv0 		 & \bv0 		\\
+			\vdots 	& \vdots 	& \vdots 	& \ddots & \vdots 	 & \vdots 	\\
+			\bv0 		& \bv0 		& \bv0 		& \cdots & \bvy{N-1}' & -\bvy{N}'\\[0.3cm]
+			\bvy{1}''& -\bvy{2}''& \bv0 		& \cdots & \bv0 		 & \bv0		\\
+			\bv0 		& \bvy{2}''	& -\bvy{3}''& \cdots & \bv0 		 & \bv0 		\\
+			\vdots 	& \vdots 	& \vdots 	& \ddots & \vdots 	 & \vdots 	\\
+			\bv0 		& \bv0 		& \bv0 		& \cdots & \bvy{N-1}''& \bvy{N}''\\[0.3cm]
+			\bvy{0}''& \bv0		& \bv0 		& \cdots & \bv0		 & \bv0 		\\
+			\bv0 		& \bv0		& \bv0 		& \cdots	& \bv0		 & \bvy{N}''
+		\end{bmatrix}
+		\begin{bmatrix}
+			a_1 \\ b_1 \\ c_1 \\ d_1 \\ \vdots \\ a_N \\ b_N \\ c_N \\ d_N
+		\end{bmatrix}
+		=
+		\begin{bmatrix}
+			t_0 \\ t_1 \\ t_1 \\ t_2 \\ \vdots \\ t_{N-1} \\ t_{N} \\[0.3cm] 0 \\ 0 \\ \vdots \\ 0 \\[0.3cm] 0 \\ 0 \\ \vdots \\ 0 \\[0.3cm] 0 \\ 0
+		\end{bmatrix}, \label{eq:sec3:spline:eq-system_matrices} \\[0.5cm]
+		\bvY \bvp = \bvt, \label{eq:sec3:spline:eq-system_short}
+	\end{gather}
+\end{subequations}
+in which $\bvY$ is a forward operator, $\bvp$ is the vector for the Splines control parameters, and $\bvt$ is observed travel-time vector. $\bvy{m}$, $\bvy{m}'$ and $\bvy{m}''$ are
+\begin{subequations}
+\begin{gather}
+	\bvy{m} = \begin{bmatrix}
+		1 & y_m & y_m^2 & y_m^3
+	\end{bmatrix}, \\
+	\bvy{m}' = \begin{bmatrix}
+		0 & 1 & 2 y_m & 3 y_m^2
+	\end{bmatrix}, \\
+	\bvy{m}'' = \begin{bmatrix}
+		0 & 0 & 2 & 6 y_m
+	\end{bmatrix}.
+\end{gather}
+\end{subequations}
+
+Here, it is readily noticeable that $\bvy{m}'$ and $\bvy{m}''$ are the first and second derivatives of $\bvy{m}$ with respect to $y_m$.
+
+Given that the system of equations in \cref{eq:sec3:spline:eq-system_matrices,eq:sec3:spline:eq-system_short} is exactly defined, its solution -- the parameter vector $\bvp$ -- is given by
+\begin{equation}
+\bvp = \inv{\bvY} \bvt.
+\end{equation}
+
+This assumes that $\bvY$ is a full-rank matrix, allowing for an inverse.
+
+This results in a function $q(y)$ which gives the time of the wave for each height $y$. The velocity over the column is therefore given by
+\begin{equation}
+	c(y) = \frac{1}{\dv{q}{y}},
+\end{equation}
+since $\dv{q}{y}$ results in the slowness, the inverse of $c(y)$. Note that, given the piece-wise behavior of $\dv{q}{y}$, its derivative will also be defined by parts; however, by the construction of $q(y)$ its first- and second-derivatives are continuous.
+
+\subsection{Rational interpolation}
+
+Another solution for the problem of rapid oscillations caused by high-order polynomials, is to use a rational interpolation. In this case, our interpolating function $q(y)$ is given by
+\begin{equation}
+	\begin{split}
+		q(y) 
+		& = \frac{P(y)}{Q(y)}\\
+		& = \frac{a_0 + a_1 y + \cdots + a_{K-1}y^{K-1}}{b_0 + b_1 y + \cdots + b_{T} y^{T}},
+	\end{split}
+\end{equation}
+where $K$ and $T$ are the number of parameters in the numerator and denominator of $q(y)$, and $K+T=N$. The function $q(y)$ interpolates the arrival-time for any height. Given the number of parameters, it is feasible to have that $q(y_m) = t_m$ for all receivers. We set $b_0 = 1$ without loss of generality.
+
+Among the advantages of rational interpolation are flexibility and stability, due to being able to model more complex behavior than simple polynomials. We also have that its derivative is also a polynomial, which can be directly calculated given the parameters of $q(y)$.
+
+However, the presence of both uncontrolled poles and zeros can cause problems. The correct choosing of $K$ and $T$ is also necessary, as different parameters will result in different interpolations. A common option is to choose $K = N//2$, and $T = N-K$ satisfying the condition for uniqueness.
+
+For any point $(y_m,t_m)$, we want that
+\begin{equation}
+	q(y_m) = t_m,
+\end{equation}
+which easily becomes $P(y_m) - Q(y_m) t_m= 0$; this being expanded to
+\begin{equation}
+ \sum_{k=0}^{K-1} a_k y^k - \sum_{n=1}^{T} b_n y^n t_m = t_m.
+\end{equation}
+
+Similarly to before, this can be written in vector form,
+\begin{equation}
+	\bvy{m} \bvp = t_m,
+\end{equation}
+with
+\begin{subequations}
+	\begin{gather}
+		\bvy{m} = \begin{bmatrix}
+			1 & y_m & \cdots & y_m^{K-1} & -t_m & -t_m y_m & \cdots & -t_m y_m^T
+		\end{bmatrix}, \\
+		\bvp = \tr{\begin{bmatrix}
+			a_0 & \cdots a_{K-1} & b_1 & \cdots & b_T
+		\end{bmatrix}}.
+	\end{gather}
+\end{subequations}
+
+And, now considering all $N$ sensors, we form a matricial system
+\begin{equation}
+	\bvY \bvp = \bvt,
+\end{equation}
+where $\bvY$ is the vertical stacking of all $\bvy{m}$, and $\bvt$ is a vertical vector of all measured times,
+\begin{subequations}
+	\begin{gather}
+		\bvY = \tr{\begin{bmatrix}
+				\tr{\bvy{1}} & \cdots & \tr{\bvy{N}}
+		\end{bmatrix}}, \\
+		\bvt = \tr{\begin{bmatrix}
+				t_1 & \cdots & t_N
+		\end{bmatrix}}.
+	\end{gather}
+\end{subequations}
+
+The solution is given by
+\begin{equation}
+	\bvp = \inv{\bvY} \bvt.
+\end{equation}
+
+\subsection{Function underfitting}
+
+Until now, we assumed no distortion and no noise in the measurements. The solutions presented also achieve no error in the measured points.
+
+In real-life scenarios, however, we can't assume distortionless and error-free measurements. In TTT, these mismatches can be caused by movement or desyncing in the devices, thus causing errors during in the inversion procedure for estimating the SSP. Solutions also don't necessarily have to achieve zero error in the receiver points, specially considering that these measurements can have some underlying unreliability.
+
+For this, an underfitted function could be used. In this case, for a problem with $N$ sensors, a velocity model with only $K < N$ parameters could be fitted, minimizing the error between the modeled travel-time under $c(y)$ and the measured travel-time for the $N$ sensors. A smaller $K$ would make the model more robust to errors in position and syncing, however it would also increase the model's error when compared to the measurements. Therefore, finding an appropriate $K$ would be important.
+
+\subsubsection{Inverse polynomial underfitting}
+
+We will take the inverse polynomial fitting approach, for which we now define that
+\begin{equation}
+	s(y) = \frac{1}{c(y)} = \sum_{n=0}^{K-1} b_n y^n,
+\end{equation}
+where we now have a summation over $K$ terms, not $N$. From this, \cref{eq:sec3:vc_ipf:func_t(hm)} becomes
+\begin{equation}
+	\sum_{n=0}^{K-1} \frac{b_n}{n+1} y_m^{n+1} = t_m,
+\end{equation}
+in which $\bar{t}_m \neq t_m$ is the estimated travel-time for the modeled slowness profile $s(y)$. The estimation error $\epsilon_m$ is therefore
+\begin{equation}
+	\epsilon_m = \bar{t}_m - t_m.
+\end{equation}
+
+A possible cost function is through the Mean-Squared Error (MSE), given by
+\begin{equation}
+	J_1(\bvb) = \sum_{m=1}^{N} \pts{\epsilon_m}^2,
+\end{equation}
+where $\tr{\bvb} = [b_0,b_1,\cdots,b_{K-1}]$ is a vector of the parameters that control the (under)fitting polynomial. Expanding this cost function, we obtain
+\begin{equation}
+	J_1(\bvb) = \sum_{m=1}^{N} \pts{\sum_{n=0}^{K-1} \frac{b_n}{n+1} y_m^{n+1} - t_m}^2 .
+\end{equation}
+
+Differentiating this w.r.t. a generic $b_u$ yields %(after considerable work, see \cref{app:appB:derivative})
+\begin{equation}
+	\pdv{J_1(\bvb)}{b_u} = \frac{2}{u+1} \sum_{m=1}^{N} \pts{ \sum_{n=0}^{K-1}\bts{ \frac{b_n}{n+1} y_m^{n+u+2} } - t_m y_m^{u+1} }.
+\end{equation}
+
+Setting this to $0$ (the minimum of the function) yields
+\begin{equation}
+	\sum_{n=0}^{K-1}\bts{ \sum_{m=1}^{N} \pts{ \frac{y_m^{n+u+2}}{n+1} } b_n } = \sum_{m=1}^{N} t_m y_m^{u+1},
+\end{equation}
+which can be again written in vector form,
+\begin{equation}
+	\bva{u} \bvb = \tau_u
+\end{equation}
+where
+\begin{subequations}
+	\begin{gather}
+		\bva{u} = \begin{bmatrix}
+			a_{u,0} & \cdots & a_{u,K-1}
+		\end{bmatrix}, \\
+		a_{u,n} = \sum_{m=1}^{N} \frac{y_m^{n+u+2}}{n+1}, \\
+		\bvb = \tr{\begin{bmatrix}
+				b_0 & b_1 & \cdots & b_{K-1}
+		\end{bmatrix}}, \\
+		\tau_u = \sum_{m=1}^{N}\frac{y_m^{n+u+2}}{n+1}.
+	\end{gather}
+\end{subequations}
+
+Considering now the derivatives w.r.t. all parameters that compose $\bvb$, we have that
+\begin{equation}
+	\bvA \bvb = \bvtau,
+\end{equation}
+in which $\bvA$ is the vertical stacking of the row-vectors $\bva{u}$, and $\bvtau$ is a column-vector of the times,
+\begin{subequations}
+	\begin{gather}
+		\bvA = \tr{\begin{bmatrix}
+				\tr{\bva{0}} & \cdots & \tr{\bva{K-1}}
+		\end{bmatrix}}, \\
+		\bvt = \tr{\begin{bmatrix}
+				t_0 & \cdots & t_{K-1}
+		\end{bmatrix}}.
+	\end{gather}
+\end{subequations}
+
+Now, the vector of parameters $\bvb$ can be obtained by
+\begin{equation}
+	\bvb = \inv{\bvA} \bvtau.
+\end{equation}
+
+Assuming $N$ equidistant points, $K = \floor{2\Sqrt{N}}$ points are sufficient for a well-conditioned function \cite{dahlquist_numerical_2008a}.
+
+\todo{Maybe talk about Belanger fake end-points?}
+
+%With this, our problem becomes
+%\begin{equation}
+%	\pdv{J_1(\bvb)}{\bvb} = \bv0
+%\end{equation}
+%which has $K$ equations (one for each parameter $b_u$) and $K$ variables (each $b_u$), being exactly determined and thus (generally) having a solution.
+%
+%Note that there is a trivial zero of $\pdv*{J_1(\bvb)}{\bvb}$ at $\bvb = \bv0$. It is easy to see that this zero doesn't correspond to a minimum (local or global), as the error isn't being minimized. However, this function is heavily non-linear, and would require an iterative process to be solved.
+%
+%Another possibility for the cost function is the Mean-Absolute Error (MAE), through
+%\begin{equation}
+%	J_2(\bvb) = \sum_{m=1}^{N} \abs{\epsilon_m}
+%\end{equation}
+%whose partial derivative in $b_u$ is
+%\begin{equation}
+%	\begin{split}
+	%		\pdv{J_2(\bvb)}{b_u}
+	%		& = \sum_{m=1}^{N}\sgn{\epsilon_m} \sum_{n=0}^{K-1} \frac{b_n}{n+u+1} y_m^{n+u+1} \\
+	%		& = \sum_{n=0}^{K=1} \frac{b_n}{n+u+1} \sum_{m=1}^{N} \sgn{\epsilon_m} y_m^{n+u+1}
+	%	\end{split}
+%\end{equation}
+%
+%Although still non-linear, the MAE's formulation is simpler and more straightforward compared to the MSE one. This results in an easier minimization process, although leading to a different solution.
+
+%\subsection{Function interpolation}
+%
+%All previously discussed methods try to estimate the velocity on each point in space. This came from the practicality in the non-vertical scenario, as there the estimation of velocity at each point in time was easier than the estimation of the position.
+%
+%However, under the assumption of verticality between the source and the receivers, the wavs direct path's horizontal staticity allows the determination of a 
+
+
+%\subsection{Discrete-velocity interpolation}
+%
+%Another technique that allows for a slight mismatch between the measured travel-times at each height, and the travel-times that are produced by the model, works by interpolating between the 
+
+\subsubsection{Rational interpolation underfitting}
+
+\todo{Fazer rational underfitting.}
+
+\done{Continuar {function underfitting}.}
+
+\done{Fazer underfitting com MAE e não MSE.}
+
+\done{Invert Spline interpolation to be t(y), not y(t).}

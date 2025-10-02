@@ -1,0 +1,34 @@
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[scale=1.5]
+		\coordinate (tl) at (-3, 2);
+		\coordinate (tr) at (3, 2);
+		\coordinate (bl) at (-3, -2);
+		\coordinate (br) at (3, -2);
+		\coordinate (cc) at (0,0);
+		\coordinate (tc) at (0,2);
+		\coordinate (bc) at (0,-2);
+		\coordinate (cl) at (-3, 0);
+		\coordinate (cr) at (3,0);
+		\coordinate (source) at ($(bl)!0.95!(br)$);
+		\coordinate (receiver) at ($(bl)!0.9!(tl)$);
+		\draw[gray,fill=none] (tl) rectangle (br);
+		\foreach \x/\val in {0.8/$r_1$, 0.6/$r_2$, 0.4/$r_3$, 0.2/$\vdots\,$, 0/$r_N$}
+		{
+			\pgfmathparse{\x+0.2} \let\y=\pgfmathresult 
+			\coordinate (pl) at ($(tl)!\y!(bl)$); %Point-left
+			\coordinate (ppl) at ($(tl)!\x!(bl)$);
+			\coordinate (ps) at ($(pl)!0.5!(ppl)$);
+			\pgfmathparse{(0.8-\x)*-12/0.8 -6} \let\oang=\pgfmathresult
+			\pgfmathparse{(0.8-\x)*-54/0.8 + 174} \let\iang=\pgfmathresult
+			\draw [->-,thick] (source) to[out=\iang,in=\oang] (ps);
+			\node[square,fill=blue!70!black] () at (ps) {};
+			\node[left=6pt of ps] () {\val};
+		}
+		\node[triangle,fill=green!70!black] () at (source) {};
+		\node[below=6pt of source] () {$s$};
+		
+	\end{tikzpicture}
+	\caption{Wave paths on heterogeneous and continuously variable environment. The green triangle represents a source, and the blue squares each of the $N$ receivers.}
+	\label{fig:sec2:wavepaths_heterogeneous-variable_environment:fig1}
+\end{figure}

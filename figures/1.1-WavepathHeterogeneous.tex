@@ -1,0 +1,25 @@
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}[scale=1.5]
+		\coordinate (tl) at (-3, 2);
+		\coordinate (tr) at (3, 2);
+		\coordinate (bl) at (-3, -2);
+		\coordinate (br) at (3, -2);
+		\coordinate (cc) at (0,0);
+		\coordinate (tc) at (0,2);
+		\coordinate (bc) at (0,-2);
+		\coordinate (cl) at (-3, 0);
+		\coordinate (cr) at (3,0);
+		\coordinate (source) at ($(bl)!0.95!(br)$);
+		\coordinate (receiver) at ($(bl)!0.9!(tl)$);
+		\draw[gray,fill=none] (tl) rectangle (br);
+		\draw[->-,thick] (source) to[out=120,in=-18] (receiver) node[pos=0.5,anchor=center,black] {$\bvr[v]$};
+		%		\filldraw[blue!50!black] (receiver) rectangle (2,2);
+		%		\filldraw[green!50!black] (source) circle (3pt);
+		\node[square,fill=blue!70!black] () at (receiver) {};
+		\node[triangle,fill=green!70!black] () at (source) {};
+		
+	\end{tikzpicture}
+	\caption{Wave path on heterogeneous and continuously variable environment.}
+	\label{fig:sec2:wavepath_heterogeneous-variable_environment}
+\end{figure}
