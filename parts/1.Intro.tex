@@ -155,12 +155,12 @@ In these regards, the most complete papers are the ones by Ali \cite{ali_opensou
 
 \subsubsection{Basic framework}
 
-Let's assume the environment to be modeled is divided into an $\sz{N_1}{N_2}$ grid of cells (horizontal $\mtimes$ vertical), with a total of $N = N_1\cdot N_2$ cells. A total of $M$ rays are produced, between any number of sources and receivers. We denote $\bvz$ as a $\sz{N}{1}$ positive vector representing the slowness in each cell, and $\bvj{m}(\bvz)$ as a $\sz{N}{1}$ vector containing the length traversed in each cell, by the $m$-th ray. The length-vector $\bvj{m}(\bvz)$ is commonly obtained externally via a fast-marching algorithm or another solver for the Eikonal equation, considering Fermat's principle of least time, and Snell's law $\bvj{m}(\bvz)$. $\bvj{m}(\bvz)$ can also be obtained directly if one considers a slowness profile with small perturbations, where ray-bending effects can be ignored, and the path is assumed linear between source and receiver. With this, the travel-time for the $m$-th ray is $t_m$, being given by
+Let's assume the environment to be modeled is divided into an $\sz{N_1}{N_2}$ grid of cells (horizontal $\mtimes$ vertical), with a total of $N = N_1\cdot N_2$ cells. A total of $M$ rays are produced, between any number of sources and receivers. We denote $\bvz \in \re^{\sz{N}{1}}$ positive vector representing the slowness in each cell, and $\bvj{m}(\bvz) \in \re^{\sz{N}{1}}$ vector containing the length traversed in each cell, by the $m$-th ray. The length-vector $\bvj{m}(\bvz)$ is commonly obtained externally via a fast-marching algorithm or another solver for the Eikonal equation, considering Fermat's principle of least time, and Snell's law $\bvj{m}(\bvz)$. $\bvj{m}(\bvz)$ can also be obtained directly if one considers a slowness profile with small perturbations, where ray-bending effects can be ignored, and the path is assumed linear between source and receiver. With this, the travel-time for the $m$-th ray is $t_m$, being given by
 \begin{equation}
 	t_m(\bvz) = \tr{\bvj{m}}(\bvz) \bvz
 \end{equation}
 
-Now we let $\bvt(\bvz)$ be the $\sz{M}{1}$ vector of travel-times for the current model, for all $M$ considered rays; and $\bvJ(\bvz)$ an $\sz{M}{N}$ matrix, where the $m$-th row is $\tr{j_m}(\bvz)$. With this, our minimization problem becomes minimizing the error $E(\bvz)$, this being translated into
+Now we let $\bvt(\bvz) \in \re^{\sz{M}{1}}$ vector of travel-times for the current model, for all $M$ considered rays; and $\bvJ(\bvz) \in \re^{\sz{M}{N}}$ matrix, where the $m$-th row is $\tr{j_m}(\bvz)$. With this, our minimization problem becomes minimizing the error $E(\bvz)$, this being translated into
 \begin{equation}
 	\opt{\bvz} = \arg\min_{\bvz} E(\bvz) = \norm{\bvJ(\bvz) \bvz - \bvt{\obs}}^2
 	\label{eq:sec2:def_minimization_bvz}
@@ -180,20 +180,20 @@ Note that this problem is non-linear and recursive: the solution to the ray path
 in which the gradients are taken with respect to each of the slownesses in $\bvz{i+1}$. Assuming that $\tr{\bvJ}(\bvz{i})\bvJ(\bvz{i})$ is invertible, then the solution to this minimization -- which translates to $\nabla E(\bvz{i+1}) = \bv0$ -- is
 \begin{subequations}
 	\begin{gather}
-		\bvz{i+1} = \bvG[t](\bvz{i}) \bvt{\obs} \\
-		\bvG[t](\bvz{i}) = \inv*{\tr{\bvJ}(\bvz{i}) \bvJ(\bvz{i})} \tr{\bvJ}(\bvz{i})
+		\bvz{i+1} = \bvG(\bvz{i}) \bvt{\obs} \\
+		\bvG(\bvz{i}) = \inv*{\tr{\bvJ}(\bvz{i}) \bvJ(\bvz{i})} \tr{\bvJ}(\bvz{i})
 	\end{gather}
 	\label{eqs:sec2:inversion_zi+1}
 \end{subequations}
 
-Since $\bvJ(\bvz{i})$ is updated repeatedly, so has to be $\bvG[t](\bvz{i})$, and thus the solution is iterative.
+Since $\bvJ(\bvz{i})$ is updated repeatedly, so has to be $\bvG(\bvz{i})$, and thus the solution is iterative.
 
 \subsubsection{Rank-deficient minimization}
 \label{subsubsec:rank-definicient-minimization}
 
-For \cref{eqs:sec2:inversion_zi+1}, it is crucial that $\tr{\bvJ}(\bvz{i})\bvJ(\bvz{i})$ is invertible. Given that $\bvJ$ is $\sz{M}{N}$, then $\tr{\bvJ}(\bvz{i})\bvJ(\bvz{i})$ is $\sz{N}{N}$. It is easy to see that $\rank{\bvJ(\bvz{i})} = N$ and $N \leq M$ are necessary and sufficient for the inversion to be possible. Intuitively, this translates to there being more measurements $M$ than unknowns $N$, that at least $N$ of the measurements are meaningful, and that any cell is represented by at least one ray.
+For \cref{eqs:sec2:inversion_zi+1}, it is crucial that $\tr{\bvJ}(\bvz{i})\bvJ(\bvz{i})$ is invertible. Given that $\bvJ(\bvz{i})  \in \re^{\sz{M}{N}}$, then $\tr{\bvJ}(\bvz{i})\bvJ(\bvz{i})  \in \re^{\sz{N}{N}}$. It is easy to see that $\rank{\bvJ(\bvz{i})} = N$ and $N \leq M$ are necessary and sufficient for the inversion to be possible. Intuitively, this translates to there being more measurements $M$ than unknowns $N$, that at least $N$ of the measurements are meaningful (linearly independent), and that any cell is represented by at least one ray.
 
-In situations where $\tr{\bvJ}(\bvz{i})\bvJ(\bvz{i})$ isn't full-rank, other procedures should be used for finding $\bvG[t](\bvz{i})$. The most popular ones (\cite{ali_opensource_2019,hormati_robust_2010,zhang_nonlinear_1998,tang_travel_2024}) are techniques derived from the gradient descent method \cite{ruder_overview_2017,haji_comparison_2021}, among which the conjugate gradient \cite{yahaya_descent_2023,hager_survey_2006} stands out. {\color{red} Another option, which hasn't been studied in the context of TTT, is through singular value decomposition \cite{barata_moore_2012,golub_calculating_1965} (SVD)-based inversion \cite{brand_fast_2006,chen_treatment_2006}. Other solvers \cite{carson_new_2017,douglas_solving_2016,ku_novel_2013,beik_iterative_2018} are also available and usable in this application, venues which are yet to be explored.}
+In situations where $\tr{\bvJ}(\bvz{i})\bvJ(\bvz{i})$ isn't full-rank, other procedures should be used for finding $\bvG(\bvz{i})$. The most popular ones (used by \cite{ali_opensource_2019,hormati_robust_2010,zhang_nonlinear_1998,tang_travel_2024}) are techniques derived from the gradient descent method \cite{ruder_overview_2017,haji_comparison_2021}, among which the conjugate gradient \cite{yahaya_descent_2023,hager_survey_2006} stands out. {\color{red} Another option, which hasn't been studied in the context of TTT, is through singular value decomposition (SVD) \cite{barata_moore_2012,golub_calculating_1965} -based inversion \cite{brand_fast_2006,chen_treatment_2006}. Other solvers \cite{carson_new_2017,douglas_solving_2016,ku_novel_2013,beik_iterative_2018} are also available and usable in this application, venues which are yet to be explored.}
 
 With this brief discussion, moving forward we assume that the kernel $\tr{\bvJ(\bvz{i})}\bvJ(\bvz{i})$ -- and its modifications via regularization, blurring, or others -- is invertible; situations where this doesn't apply can be treated with the mentioned techniques.
 
@@ -212,23 +212,25 @@ From \cref{eq:sec2:def_minimization_bvz}, we can add a regularization term in th
 \end{subequations}
 with $\alpha$ being a controlling parameter. Assuming that the regularization function can be given by $P_{\alpha}(\bvz{i+1}) = \alpha^2\norm{\bvD\bvz{i+1}}^2$ where $\bvD$ is a square matrix, then the solution is
 \begin{equation}
-	\bvG[t](\bvz{i}) = \inv*{\tr{\bvJ(\bvz{i})} \bvJ(\bvz{i}) + \alpha^2 \tr{\bvD}\bvD} \tr{\bvJ}(\bvz{i})
+	\bvG(\bvz{i}) = \inv*{\tr{\bvJ(\bvz{i})} \bvJ(\bvz{i}) + \alpha^2 \tr{\bvD}\bvD} \tr{\bvJ}(\bvz{i})
 \end{equation}
-for this inversion step to be possible, it is sufficient that $\bvD$ is a full-rank matrix\footnote{By definition, $\tr{\bvJ}(\bvz{i}) \bvJ(\bvz{i})$ is positive-semidefinite, $\tr{\bvD}\bvD$ is positive-definite if it is full-rank square matrix, and the sum of a positive-semidefinite and a positive-definite is always positive-definite, this being a sufficient condition for invertibility.}.
+for this inversion step to be possible, it is sufficient that $\bvD$ is a full-rank matrix\footnote{\label{footnote:positive-definite_inversion}By definition, $\tr{\bvJ}(\bvz{i}) \bvJ(\bvz{i})$ is positive-semidefinite, $\tr{\bvD}\bvD$ is positive-definite if it is full-rank square matrix, and the sum of a positive-semidefinite and a positive-definite is always positive-definite, this being a sufficient condition for invertibility.}.
 
 The regularization matrix $\bvD$ can be chosen to improve a range of metrics. Choosing $\bvD = \Id$ \cite{phillips_traveltime_1991} results in the minimization also considering the root mean-square (RMS) of the slowness vector; this is equivalent to considering the presence in white noise in the measurements, and trading model accurateness for noise rejection. Choosing $\bvD z \approx \nabla^2 s(x,y)$, (discretely) approximating the Laplacian of the (continuous) slowness profile \cite{zhang_nonlinear_1998,ali_opensource_2019}, resulting in a minimization that penalizes the Laplacian of the achieved slowness profile; that is, a solution that also considers the curvature/jumps in the SSP, searching for a smoother profile.
 
 \cite{zhang_nonlinear_1998} also briefly comments on using third-degree derivatives instead of second-degree ones (the latter being the Laplacian regularization), which could also result in a good smoothing on the velocity profile. \cite{hormati_robust_2010} proposes a regularization function based on the orthonormal representation of the slowness distribution, and either the $L_0$ or $L_1$ norms.
 
-{\color{red} Another possibility that is still open for exploration is the use of multiple regularization functions. For example, a leveraged usage of both previously presented ones (white-noise regularization, and Laplacian penalization) can lead to a good smoothness on the slowness profile, while maintaining a guaranteed-inversible kernel. That is, we say that
+{\color{red} Another possibility that is still open for exploration is the use of multiple regularization functions. For example, a leveraged usage of both previously presented ones (white-noise regularization, and Laplacian penalization) can lead to a good smoothness on the slowness profile, while maintaining a guaranteed-invertible kernel. That is, we say that
 \begin{equation}
 	E(\bvz{i+1}) = \norm{\bvJ(\bvz{i}) \bvz{i+1} - \bvt{\obs}}^2 + \alpha^2\norm{\bvD\bvz{i+1}}^2 + \beta^2 \norm{\bvz{i+1}}^2
 \end{equation}
 for which
 \begin{equation}
-	\bvG[t](\bvz{i}) = \inv*{\tr{\bvJ(\bvz{i})} \bvJ(\bvz{i}) + \alpha^2 \tr{\bvD}\bvD + \beta^2 \Id} \tr{\bvJ}(\bvz{i})
+	\bvG(\bvz{i}) = \inv*{\tr{\bvJ(\bvz{i})} \bvJ(\bvz{i}) + \alpha^2 \tr{\bvD}\bvD + \beta^2 \Id} \tr{\bvJ}(\bvz{i})
 \end{equation}
-The inverting term is guaranteed to be positive-definite, and therefore the safely inversion can be taken.}
+
+The brackets term is guaranteed to be positive-definite (\cref{footnote:positive-definite_inversion}), and therefore safely invertible.
+}
 \subsubsection{Convolutional averaging/blurring smoothing}
 
 Another interesting tool that is seen in the literature \cite{phillips_traveltime_1991,meyerholtz_convolutional_1989} is to employ a blur on the gradient. That is, we define that
@@ -237,12 +239,12 @@ Another interesting tool that is seen in the literature \cite{phillips_traveltim
 \end{equation}
 where $\bvJ[d](\bvz{i}) = \bvJ(\bvz{i})\bvB{i}$ and $\bvz[d]{i+1} = \inv{\bvB{i}} \bvz{i+1}$, and $\bvB{i}$ is the $i$-th iteration's blurring matrix (this being based on a Gaussian blur, or any other averaging kernel, that decreases in radius at each iteration). In this scenario, the solution $\bvz{i+1}$ is
 \begin{equation}
-	\bvG[t](\bvz{i}) = \bvB{i} \inv*{\tr{\bvB{i}} \tr{\bvJ} \bvJ \bvB{i} + \alpha^2 \tr{\bvD}\bvD} \tr{\bvB{i}} \tr{\bvJ}
+	\bvG(\bvz{i}) = \bvB{i} \inv*{\tr{\bvB{i}} \tr{\bvJ} \bvJ \bvB{i} + \alpha^2 \tr{\bvD}\bvD} \tr{\bvB{i}} \tr{\bvJ}
 \end{equation}
 
-To achieve this, the regularization function has to be adapted, such that $P_{\alpha}(\bvz{i+1}) = \alpha^2 \norm{\bvD \inv{\bvB{i}} \bvz{i+1}}^2$; this means the regularization is applied on the ``reverse blurred'' signal. As stated, the blurring matrix $\bvB{i}$ depends on the iterator $i$. Usually, the blur radius is decreased for increasing $i$, aiming at gradually finding a more and more refined and precise (less blurry) solution.
+To achieve this, the regularization function has to be adapted, such that $P_{\alpha}(\bvz{i+1}) = \alpha^2 \norm{\bvD \inv{\bvB{i}} \bvz{i+1}}^2$; this means the regularization is applied on the ``reverse blurred'' signal. As stated, the blurring matrix $\bvB{i}$ depends on the iterator $i$. Usually, the blur radius is decreased for increasing $i$, aiming at gradually finding a more refined and accurate (less blurry) solution.
 
-This convolutional averaging (also called ray broadening \cite{meyerholtz_convolutional_1989,phillips_traveltime_1991}) can help find solutions by scattering the rays and expanding the paths taken to neighboring cells, thus improving in the problem of some cells not being traversed by any rays.
+This convolutional averaging (also called ray broadening \cite{meyerholtz_convolutional_1989,phillips_traveltime_1991}) can help find solutions by scattering the rays and expanding the paths taken to neighboring cells, thus dealing with the problem of some cells not being traversed by any rays.
 
 In \cite{ali_opensource_2019} a similar blurring framework is proposed, but this blur is applied directly to the gradient, such that
 \begin{equation}
@@ -250,16 +252,17 @@ In \cite{ali_opensource_2019} a similar blurring framework is proposed, but this
 \end{equation}
 Since in the cited paper the solution $\bvz{i+1}$ is found via the conjugate gradient (iterative) method, and not by inversion, the blurring matrix is variable within the conjugate gradient iterative search for the inverse (with iterator $k$), rathen than the Eikonal solving iterative process (iterator $i$). {\color{red} Assuming invertibility, the solution can be directly achieved through
 \begin{equation}
-	\bvG[t](\bvz{i}) = \inv*{\bvB{i} \tr{\bvJ}(\bvz{i}) \bvJ(\bvz{i}) + \tr{\bvD}\bvD}\bvB{i} \bvJ[T](\bvz{i})
+	\bvG(\bvz{i}) = \inv*{\bvB{i} \tr{\bvJ}(\bvz{i}) \bvJ(\bvz{i}) + \tr{\bvD}\bvD}\bvB{i} \bvJ[T](\bvz{i})
 \end{equation}
 situation in which the blurring can be lessened on each iteration of $i$, or even kept constant.}
 
-Note that both smoothing frameworks presented require either the presence of a regularization term (otherwise the inverse term can be expanded, and the $\bvB{i}$ terms will cancel); or that the system is sufficiently ill-posed such that a non-inverse minimization is necessary, case in which the smoothing effect doesn't cancel with its inverse.
+Note that both smoothing frameworks presented require either the presence of a regularization term (otherwise the inverse term can be expanded, and the $\bvB{i}$ terms will cancel); or that the system is sufficiently ill-posed such that a non-inverse minimization is necessary, case in which the smoothing effect doesn't necessarily cancel with its inverse.
 
 {\color{red}
 \subsubsection{SVD pseudo-inversion}
+\noindent\bullet~\textit{Singular Value Decomposition}
 
-As briefly commented in \cref{subsubsec:rank-definicient-minimization}, one possibility for the inversion in situations where $\bvJ[T](\bvz{i}) \bvJ(\bvz{i})$ is rank-deficient, is the use of an SVD-based inversion. We write $\bvJ(\bvz{i})$ through its singular value decomposition, as
+As briefly commented in \cref{subsubsec:rank-definicient-minimization}, one possibility for the inversion in situations where $\bvJ[T](\bvz{i}) \bvJ(\bvz{i})$ is rank-deficient, is the use of an SVD-based pseudo-inversion. We write $\bvJ(\bvz{i})$ through its singular value decomposition, as
 \begin{equation}
 	\bvJ(\bvz{i}) = \bvU \bvSi \bvV[T]
 \end{equation}
@@ -275,7 +278,11 @@ in which $\bvU \in \re^{\sz{M}{M}}$ and $\bvV \in \re^{\sz{N}{N}}$ are the left-
 		0 & 0 & \cdots & 0
 	\end{bmatrix}
 \end{equation}
-and $\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_N$ are the singular values of $\bvJ(\bvz{i})$. Assuming that $\rank{\bvJ(\bvz{i})} = R \leq N$, then the last $N-R$ singular values of $\bvJ(\bvz{i})$ -- and thus the last $N-R$ diagonal entries of $\bvSi$ -- will be zero. In this scenario, $\pinv*{\bvJ[T](\bvz{i}) \bvJ(\bvz{i})}$ -- the pseudo-inverse of ${\bvJ[T](\bvz{i}) \bvJ(\bvz{i})}$ -- can be obtained as
+with $\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_N$ being the singular values of $\bvJ(\bvz{i})$. By definition, $\bvU \equiv \bvU(\bvz{i})$ (similarly for $\bvSi$ and $\bvV$), although this relation was omitted for clarity of notation.
+
+\noindent\bullet~\textit{SVD pseudo-inverse}
+
+Assuming that $\rank{\bvJ(\bvz{i})} = R < N$, then $\lambda_{R+1} = \cdots = \lambda_{N} = 0$. In this scenario, $\pinv{[\bvJ[T](\bvz{i}) \bvJ(\bvz{i})]}$ -- where $\pinv*{\cdot}$ denotes the pseudo-inverse -- can be obtained as
 \begin{equation}
 	\begin{split}
 		\pinv*{\bvJ[T](\bvz{i}) \bvJ(\bvz{i})}
@@ -285,28 +292,44 @@ and $\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_N$ are the singular value
 		& = \bvV \pinv{\bvSi} \pinv{{\bvSi[T]}} \bvV[T]
 	\end{split}
 \end{equation}
-where the orthonormality of $\bvV$ and the distributive property of the pseudo-inverse (considering the orthonormality of $\bvV$ and of the columns of $\bvSi$) were used; and $\pinv{\bvSi} \in\re^{\sz{N}{M}}$ is a diagonal matrix, with its entries being the reciprocal of the singular values of $\bvJ(\bvz{i})$.
-
-With this, the solution to the minimization problem is
+where the orthogonality of $\bvV$ and the distributive property of the pseudo-inverse (considering the orthogonality of $\bvV$ and of the columns of $\bvSi$) were used; and $\pinv{\bvSi} \in\re^{\sz{N}{M}}$ is a diagonal matrix, with its entries being the reciprocal of the singular values of $\bvJ(\bvz{i})$. Additionally, $\pinv{\bvSi}$ can be explicitly written as
+\begin{equation}
+	\pinv{\bvSi} = \begin{bmatrix}
+		\inv{\lambda_1} & 0 				& \cdots & 0 				& 0 	 & \cdots & 0 \\
+		0 				& \inv{\lambda_2} 	& \cdots & 0 				& 0 	 & \cdots & 0 \\
+		\vdots 			& \vdots 			& \ddots & \vdots 			& \vdots & \ddots & \vdots \\
+		0 				& 0 				& \cdots & \inv{\lambda_R}	& 0 	 & \cdots & 0 \\
+		0				& 0					& \cdots & 0 				& 0		 & \cdots & 0 \\
+		\vdots 			& \vdots 			& \ddots & \vdots 			& \vdots & \ddots & \vdots \\
+		0				& 0					& \cdots & 0 				& 0		 & \cdots & 0
+	\end{bmatrix}_{\sz{N}{M}}
+\end{equation}
+in which the last $M-R$ columns, and last $N-R$ rows, are strictly $0$. With this pseudo-inversion of $\pinv{\bvSi}$, and therefore of $\bvJ[T](\bvz{i}) \bvJ(\bvz{i})$, the solution to the minimization problem is
 \begin{equation}
 	\begin{split}
-		\bvG[t](\bvz{i})
+		\bvG(\bvz{i})
 		& = \pinv*{\bvJ[T](\bvz{i}) \bvJ(\bvz{i})} \bvJ[T](\bvz{i}) \\
 		& = \bvV \pinv{\bvSi} \pinv{{\bvSi[T]}} \bvV[T] \bvV \bvSi[T] \bvU[T] \\
 		& = \bvV \pinv{\bvSi} \bvU[T]
 	\end{split}
+	\label{eq:sec2:solution-G_pseudo-inverse}
 \end{equation}
+where, by definition of the pseudo-inverse, $\pinv{\bvSi} \pinv{{\bvSi[T]}} \bvSi[T] = \pinv{\bvSi}$.
 
-With this solution, the gradient for $\bvz{i} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ is
+In the particular case where $R = N$, then $\bvJ[T](\bvz{i}) \bvJ(\bvz{i})$ is positive-definite, thus full-rank and straightforwardly invertible. Therefore, in this particular scenario the pseudo-inverse isn't necessary.
+
+\noindent\bullet~\textit{Gradient with SVD}
+
+The gradient for $\bvz{i+1} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ is
 \begin{equation}
 	\begin{split}
-		\nabla E(\bvz{i})
+		\nabla E(\bvz{i+1})
 		& = 2\pts{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T] \bvV \pinv{\bvSi} \bvU[T] \bvt - \bvV \bvSi[T] \bvU[T] \bvt} \\
 		& = 2\pts{\bvV \bvSi[T] \bvSi \pinv{\bvSi} \bvU[T] \bvt - \bvV \bvSi[T] \bvU[T] \bvt} \\
 		& = 2\pts{\bvV \bvSi[T] \bts{\Id{M;R} - \Id{M}} \bvU[T] \bvt}
 	\end{split}
 \end{equation}
-where $\Id{M;R} \in \re^{\sz{M}{M}}$ is a diagonal matrix with the first $R$ entries being $1$, and the last $M-R$ ones being $0$; and $\Id{M} \in \re^{\sz{M}{M}}$ is the identity matrix. From this, $\Id{M;R} - \Id{M}$ has its first $R$ diagonal entries $0$, and the last ones $-1$. Since all rows of $\bvSi[T]$ are in the null space of $\Id{M;R} - \Id{M}$ (only the first $R$ entries of any row of $\bvSi[T]$ are non-zero, exactly where $\Id{M;R} - \Id{M}$ is zero), then $\bvSi[T]\bts{\Id{M;R} - \Id{M}} = \bv0$. Therefore,
+where $\Id{M;R} \in \re^{\sz{M}{M}}$ is a diagonal matrix with the first $R$ entries being $1$, and the remaining $M-R$ ones being $0$; and $\Id{M} \in \re^{\sz{M}{M}}$ is the identity matrix. From this, $\Id{M;R} - \Id{M}$ has its first $R$ diagonal entries $0$, and the last ones $-1$. Since all rows of $\bvSi[T]$ are in the null space of $\Id{M;R} - \Id{M}$ (only the first $R$ entries of any row of $\bvSi[T]$ are non-zero, exactly where $\Id{M;R} - \Id{M}$ is zero), then $\bvSi[T]\bts{\Id{M;R} - \Id{M}} = \bv0$. Therefore,
 \begin{equation}
 	\begin{split}
 		\nabla E(\bvV \pinv{\bvSi} \bvU[T] \bvt)
@@ -315,35 +338,75 @@ where $\Id{M;R} \in \re^{\sz{M}{M}}$ is a diagonal matrix with the first $R$ ent
 	\end{split}
 \end{equation}
 
-With this, we show that $\bvz{i+1} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ is a solution to the minimization process.
+Therefore, $\bvz{i+1} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ is a solution to the minimization process.
 
-Furthermore, if we write
-\begin{equation}
-	\bvV = \begin{bmatrix}
-		\bvV{1} & \bvV{2}
-	\end{bmatrix}
-\end{equation}
-where $\bvV{1}\in \re^{\sz{N}{R}}$ are the first $R$ columns of $\bvV$, and $\bvV{2} \in \re^{\sz{N}{(N-R)}}$ the remaining $N-R$ columns of $\bvV$, relative to the zero rows of $\bvSi$; that is, the columns of $\bvV{2}$ form an orthonormal basis for the null space of $\bvSi$ (and thus, of $\bvJ(\bvz{i})$).
+\noindent\bullet~\textit{Null-space exploitation}
 
-For any $\bvmu \in \re^{\sz{(N-R)}{1}}$, any vector of the form $\bvz[t] = \bvV{2} \bvmu$ will be within the null space of $\bvSi$, and thus $\bvJ \bvz[t] = \bvU \bvSi \bvV[T] \bvV{2} \bvmu$ will be identically $0$. Therefore,
+We can expand on the solution $\bvz{i+1} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ by exploiting the null space of $\bvJ(\bvz{i})$. We write
 \begin{equation}
-	\nabla E(\bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2} \bvmu) = \bv0~\forall~\bvmu \in \re^{\sz{(N-R)}{1}}
+	\bvV = \left[\begin{array}{c|c}
+		\!\bvV{1} & \bvV{2}\!
+	\end{array}\right]
 \end{equation}
+where $\bvV{1}\in \re^{\sz{N}{R}}$ are the first $R$ columns of $\bvV$, $\bvV{2} \in \re^{\sz{N}{(N-R)}}$ the remaining $N-R$ columns of $\bvV$, and $[\cdot|\cdot]$ denotes matrix concatenation. Note that $\bvV{2}$ is relative to last $N-R$ zero rows of $\bvSi$, which are strictly $0$; this implies that the columns of $\bvV{2}$ form an orthonormal basis for the null space of $\bvJ(\bvz{i})$.
 
-This information could be leveraged to find a solution that is optimal in another metric. For example, we can define a new cost function $F(\bvmu)$, which is given by
+Given a coordinate vector $\bvmu \in \re^{\sz{(N-R)}{1}}$, any $\bvz[t] = \bvV{2} \bvmu$ will be within the null space of $\bvSi$, and therefore $\bvJ \bvz[t] = \bvU \bvSi \bvV[T] \bvV{2} \bvmu$ will be by definition $\bv0$. This means that, for $\bvz{i+1} \equiv \bvz{i+1}(\bvmu) = \bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2} \bvmu$, we have
+\begin{subequations}
+	\begin{gather}
+		\nabla E(\bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2} \bvmu) = \bv0, \\
+		E(\bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2} \bvmu) = E(\bvV \pinv{\bvSi} \bvU[T] \bvt)
+	\end{gather}
+\end{subequations}
+
+\noindent\bullet~\textit{Secondary metric minimization}
+
+Given another metric, this information on $\bvmu$ can be leveraged to find an optimal solution within this metric, while keeping to $\nabla E(\bvz{i+1}) = \bv0$. For example, we can define a new cost function $F(\bvmu)$, given by
 \begin{equation}
-	F(\bvmu) = \norm{\bvD \pts{\bvV \pinv{\bvSi} \bvU{T} \bvt + \bvV{2}\bvmu}}^2
+	F(\bvmu) = \norm{\bvD \pts{\bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2}\bvmu}}^2
 \end{equation}
-where $\bvD$ is the previously determined discrete approximation for the Laplacian. Since $\rank{\bvV{2}} = N-R$, given that all of its columns are orthonormal, and assuming that $\bvD$ is a full-rank matrix, a solution to this problem can be directly found, this being given by
+where $\bvD$ is a matrix that governs this secondary metric. For example, we take $\bvD$ to be the previously determined discrete approximation for the Laplacian. Given that the column-orthogonality of $\bvV{2}$ implies $\rank{\bvV{2}} = N-R$, and assuming that $\bvD$ is a full-rank matrix, a solution to this problem can be directly found, as
 \begin{equation}
 	\bvmu = -\inv*{\bvV[T]{2} \bvD[T] \bvD\bvV{2}} \bvV[T]{2} \bvD[T] \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt
 \end{equation}
 
-Defining $\bvP \bvOm \bvQ[T]$ as the singular value decomposition of $\bvD \bvV{2}$, then
+Via properties of the pseudo-inverse, this can be written as
 \begin{equation}
-	\bvmu = -\bvQ \inv{\bvOm} \bvP[T] \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt
+	\bvmu = -\pinv*{\bvD \bvV{2}} \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt
+\end{equation}
+With this, the full solution to both minimization problems is given by
+\begin{equation}
+	\begin{split}
+		\bvz{i+1}
+		& = \bvV \pinv{\bvSi} \bvU[T] \bvt - \bvV{2} \bvQ \pinv{\bvOm} \bvP[T] \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt \\
+		& = \pts{\Id{N} - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD} \bvV \pinv{\bvSi} \bvU[T] \bvt
+	\end{split}
 \end{equation}
 
-This solution both has zero error between the measured and estimated travel-times, and has minimum Laplacian within the space of zero-error solutions. The main insight for this is to exploit the null-space of $\bvJ$, and minimize the main objective within the row space, and minimize the second objective within the null space. Note that this procedure only works if $\rank{\bvJ(\bvz{i})} = R < N$. If $R = N$, there is no null space to be exploited, and therefore the second minimization can't be done.
+This solution both has zero gradient in the error function, and has minimum Laplacian within the space of zero-error solutions. The main insight for this expansion on $\bvmu$ is, by exploiting the null-space of $\bvJ$, to minimize the primary objective within the row space, and to minimize the second objective within the null space. Note that this procedure only works if $\rank{\bvJ(\bvz{i})} = R < N$. If $R = N$, there is no null space to be exploited, and the second minimization can't be performed.
+
+\noindent\bullet~\textit{SVD truncation}
+
+Another possibility is to truncate $\bvSi$, or to set an arbitrary number of the smallest diagonal entries of $\bvSi$ to zero. This procedure simultaneously: reduces the effective condition number (ratio between largest and smallest non-zero singular values), improving stability in the inversion problem of minimizing the primary metric; increases the practical null-space of $\bvSi$, allowing for the secondary metric -- here, the Laplacian -- to be more aggressively minimized; but in contrast, introduces some error in the primary minimization, with the minimum found not having truly zero gradient.
+
+We denote $\bvSi[t]{\tilde{R}}$ as a truncated $\bvSi$ with only its first $\tilde{R}$ diagonal entries non-zero; that is, $N-\tilde{R}$ of its diagonal entries are zero, and $R-\tilde{R}$ were forced to zero in the approximation. Trivially, $\tilde{R} \leq R$ for this to be valid. Given this truncation, it is easy to verify that
+\begin{equation}
+	\begin{split}
+		\bvG(\bvz{i}) & \approx \bvG[t](\bvz{i}) \\
+		& = \bvV \pinv{\bvSi[t]{\tilde{R}}} \bvU[T]
+	\end{split}
+\end{equation}
+is the optimal solution for the minimization problem with $\bvSi[t]{\tilde{R}}$. The gradient for a solution using this $\bvG[t](\bvz{i})$ is
+\begin{equation}
+	\begin{split}
+		\nabla E(\bvz{i+1})
+		& = 2\pts{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T] \bvV \pinv{\bvSi[t]} \bvU[T] \bvt - \bvV \bvSi[T] \bvU[T] \bvt} \\
+		& = 2\pts{\bvV \bvSi[T] \bvSi \pinv{\bvSi[t]} \bvU[T] \bvt - \bvV \bvSi[T] \bvU[T] \bvt} \\
+		& = 2\pts{\bvV \bvSi[T] \bts{\Id{M;\tilde{R}} - \Id{M}} \bvU[T] \bvt} \\
+		& = 2\pts{\sum_{i=\tilde{R}+1}^{R} \sigma_i \bvv{i} \bvu[T]{i}} \bvt
+	\end{split}
+\end{equation}
+where $\bvv{i}$ and $\bvu{i}$ are the $i$-th row of $\bvV$ and $\bvU$ respectively, and $\sigma_i$ is the $i$-th diagonal element of $\bvSi$. The smaller the entries of $\bvSi$ that were set to zero ($\sigma_i$ for $i \in [\tilde{R}+1,~R]$), the smaller the gradient, and the closer the obtained solution would be to the space of optimal ($\nabla E = 0$) solutions.
+
+We highlight that $\bvSi[t] \bvV[T] \bvV{2} \bvmu$ is still a zero matrix, given that $\nul{\bvSi} \subseteq \nul{\bvSi[t]}$, and thus the process to find the optimal $\bvmu$ is the same, except for $\pinv{\bvSi}$ being replaced by $\pinv{\bvSi[t]}$.
 }
 \newpage
