@@ -316,7 +316,7 @@ in which the last $M-R$ columns, and last $N-R$ rows, are strictly $0$. With thi
 \end{equation}
 where, by definition of the pseudo-inverse, $\pinv{\bvSi} \pinv{{\bvSi[T]}} \bvSi[T] = \pinv{\bvSi}$.
 
-In the particular case where $R = N$, then $\bvJ[T](\bvz{i}) \bvJ(\bvz{i})$ is positive-definite, thus full-rank and straightforwardly invertible. Therefore, in this particular scenario the pseudo-inverse isn't necessary.
+In the particular case where $R = N$, then $\bvJ[T](\bvz{i}) \bvJ(\bvz{i})$ is positive-definite, thus full-rank and straightforwardly invertible. Therefore, the pseudo-inverse isn't necessary in this particular scenario.
 
 \noindent\bullet~\textit{Gradient with SVD}
 
@@ -377,12 +377,14 @@ With this, the full solution to both minimization problems is given by
 \begin{equation}
 	\begin{split}
 		\bvz{i+1}
-		& = \bvV \pinv{\bvSi} \bvU[T] \bvt - \bvV{2} \bvQ \pinv{\bvOm} \bvP[T] \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt \\
+		& = \bvV \pinv{\bvSi} \bvU[T] \bvt - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt \\
 		& = \pts{\Id{N} - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD} \bvV \pinv{\bvSi} \bvU[T] \bvt
 	\end{split}
 \end{equation}
 
 This solution both has zero gradient in the error function, and has minimum Laplacian within the space of zero-error solutions. The main insight for this expansion on $\bvmu$ is, by exploiting the null-space of $\bvJ$, to minimize the primary objective within the row space, and to minimize the second objective within the null space. Note that this procedure only works if $\rank{\bvJ(\bvz{i})} = R < N$. If $R = N$, there is no null space to be exploited, and the second minimization can't be performed.
+
+Another important remark in this scenario is that $\bvV{2} \pinv*{\bvD \bvV{2}} \bvD$ cannot be simplified. This would require that $\bvV{2}$ has linearly independent rows, which it can't given that $M > N-R$.
 
 \noindent\bullet~\textit{SVD truncation}
 
@@ -407,6 +409,6 @@ is the optimal solution for the minimization problem with $\bvSi[t]{\tilde{R}}$.
 \end{equation}
 where $\bvv{i}$ and $\bvu{i}$ are the $i$-th row of $\bvV$ and $\bvU$ respectively, and $\sigma_i$ is the $i$-th diagonal element of $\bvSi$. The smaller the entries of $\bvSi$ that were set to zero ($\sigma_i$ for $i \in [\tilde{R}+1,~R]$), the smaller the gradient, and the closer the obtained solution would be to the space of optimal ($\nabla E = 0$) solutions.
 
-We highlight that $\bvSi[t] \bvV[T] \bvV{2} \bvmu$ is still a zero matrix, given that $\nul{\bvSi} \subseteq \nul{\bvSi[t]}$, and thus the process to find the optimal $\bvmu$ is the same, except for $\pinv{\bvSi}$ being replaced by $\pinv{\bvSi[t]}$.
+We highlight that $\bvSi[t] \bvV[T] \bvV{2} \bvmu$ is still a zero matrix, given that $\bvV[T]{1} \bvV{2} = \bv0$ and $\pts{\bvV[T]{2} \bvV{2}} \in \nul{\bvSi} \subseteq \nul{\bvSi[t]}$, and thus $\bvmu$ is found through the same process, except for $\pinv{\bvSi}$ being replaced by $\pinv{\bvSi[t]}$.
 }
 \newpage
