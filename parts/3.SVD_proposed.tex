@@ -91,7 +91,7 @@ where $\Id{M;R} \in \re^{\sz{M}{M}}$ is a diagonal matrix with the first $R$ ent
 
 This verification ensures that $\bvz{i+1} = \pinv{\bvJ{i}} \bvt{\obs}$ is a solution to the minimization process from \cref{eqs:sec2:iterative_minimization_Ezi}.
 
-We denote $\bvU{k}$ as the first $k$ columns of $\bvU$, $\bvU{-k}$ as the last $k+1$ columns of $\bvU$, and $\bvU{(j\sim k)}$ as the columns from $j$ to $k$ (inclusive) of $\bvU$. Using this, the cost function can be explicitly obtained, being given by
+We denote $\bvU{k}$ as the first $k$ columns of $\bvU$, $\bvU{-k}$ as the last $k$ columns of $\bvU$, and $\bvU{(j\sim k)}$ as the columns from $j$ to $k$ (inclusive) of $\bvU$. Using this, the cost function can be explicitly obtained, being given by
 \begin{equation}
 	E(\bvz{i+1}) = \bvt[T]{\obs} \bvU{-R} \bvU[T]{-R} \bvt{\obs}
 	\label{eq:sec2:cost_func_explicit_svd}
@@ -108,22 +108,25 @@ We can expand on the solution $\bvz{i+1} = \pinv{\bvJ{i}} \bvt{\obs}$ by exploit
 \end{equation}
 where $\bvV{1}\in \re^{\sz{N}{R}}$ are the first $R$ columns of $\bvV$, $\bvV{2} \in \re^{\sz{N}{(N-R)}}$ the remaining $N-R$ columns of $\bvV$, and $[\cdot|\cdot]$ denotes matrix concatenation. Note that $\bvV{2}$ is relative to last $N-R$ zero rows of $\bvSi$, which are strictly $0$; this implies that the columns of $\bvV{2}$ form an orthonormal basis for the null space of $\bvJ{i}$.
 
-Given a coordinate vector $\bvmu \in \re^{\sz{(N-R)}{1}}$, any $\bvz[b] = \bvV{2} \bvmu$ will be within the null space of $\bvSi$, and therefore $\bvJ \bvz[b] = \bvU \bvSi \bvV[T] \bvV{2} \bvmu$ will be by definition $\bv0$. This means that, for $\bvz{i+1} \equiv \bvz{i+1}(\bvmu) = \pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu$, we have
+Given a coordinate vector $\bvmu \in \re^{\sz{(N-R)}{1}}$, any $\bvz[b] = \bvV{2} \bvmu$ will be within the null space of $\bvSi$, and therefore $\bvJ \bvz[b] = \bvU \bvSi \bvV[T] \bvV{2} \bvmu$ will be by definition $\bv0$ (from the orthogonality of $\bvV$ and the null-columns of $\bvSi$). This means that, for $\bvz{i+1} \equiv \bvz{i+1}(\bvmu) = \pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu$, we have
 \begin{subequations}
 	\begin{gather}
-		\nabla E(\pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu) = \bv0, \\
-		E(\pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu) = E(\pinv{\bvJ{i}} \bvt{\obs})
+		E(\pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu) = E(\pinv{\bvJ{i}} \bvt{\obs}) \\
+		\nabla E(\pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu) = \bv0
 	\end{gather}
+	\label{eq:sec3:mu_doesnt_affect_cost-or-gradient}
 \end{subequations}
+
+With this, we can choose any $\bvmu$, and both the cost function $E(\bvz{i})$ and its gradient will remain unchanged.
 
 \subsection{Secondary metric minimization}
 
-Given another metric, this information on $\bvmu$ can be leveraged to find an optimal solution within this metric, while keeping to $\nabla E(\bvz{i+1}) = \bv0$. For example, we can define a new cost function $F(\bvmu)$, given by
+Given another metric, this information on the irrelevance of $\bvmu$ for the original cost function can be leveraged to find an optimal solution within this secondary metric, while maintaining the results from \cref{eq:sec3:mu_doesnt_affect_cost-or-gradient}. For example, we can define a new cost function $F(\bvmu)$, given by
 \begin{equation}
 	F(\bvmu) = \norm{\bvD \pts{\pinv{\bvJ{i}} \bvt{\obs} + \bvV{2}\bvmu}}^2
 	\label{eq:sec3:cost_function_mu}
 \end{equation}
-where $\bvD$ is a matrix that governs this secondary metric. For example, we take $\bvD$ to be the previously determined discrete approximation for the Laplacian. Given that the column-orthogonality of $\bvV{2}$ implies $\rank{\bvV{2}} = N-R$, and assuming that $\bvD$ is a full-rank matrix, a solution to this problem can be directly found, as
+where $\bvD$ is a matrix that governs this secondary metric (similarly to how it governed the regularization term). For example, we take $\bvD$ to be the previously determined discrete approximation for the Laplacian. Given that the column-orthogonality of $\bvV{2}$ implies $\rank{\bvV{2}} = N-R$ (which means $\bvV{2}$ is full-rank), and assuming that $\bvD$ is a full-rank matrix, a solution to this problem can be directly found, as
 \begin{equation}
 	\bvmu = -\inv*{\bvV[T]{2} \bvD[T] \bvD\bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvJ{i}} \bvt{\obs}
 \end{equation}
@@ -143,7 +146,7 @@ With this, the full solution to both minimization problems is given by
 	\label{eq:sec2:definition_zi+1_with_mu}
 \end{equation}
 
-This solution both has zero gradient in the error function, and has minimum Laplacian within the space of minimum-error solutions. The main insight for this expansion on $\bvmu$ is, by exploiting the null-space of $\bvJ$, to minimize the primary objective within the row space, and to minimize the second objective within the null space. Note that this procedure only works if $\rank{\bvJ{i}} = R < N$. If $R = N$, there is no null space to be exploited, and the second minimization can't be performed.
+This solution both has zero gradient in the primary cost function, and minimizes the secondary cost function within the space of primary-minimum-error solutions. The main insight for this expansion on $\bvmu$ is, by exploiting the null-space of $\bvJ$, to minimize the primary objective within the row space, and to minimize the second objective within the null space. Note that this procedure only works if $\rank{\bvJ{i}} = R < N$. If $R = N$, there is no null space to be exploited, and the second minimization can't be performed.
 
 Another important remark in this scenario is that $\bvV{2} \pinv*{\bvD \bvV{2}} \bvD$ cannot be simplified. This would require that $\bvV{2}$ has linearly independent rows, which it can't given that $N > N-R$. Another important factor is that the gradient of $F(\bvmu)$ is taken with respect to $\mu$. This implies that within the subspace defined by $\bvV{2}$, the found $\bvmu$ is optimal, but by taking the gradient with respect to $\pinv{\bvJ{i}} \bvt{\obs}$, this gradient will not be $\bv0$.
 
