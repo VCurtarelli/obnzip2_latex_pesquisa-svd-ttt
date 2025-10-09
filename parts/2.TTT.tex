@@ -53,7 +53,7 @@ This paper \cite{phillips_traveltime_1991} studies different methods for discret
 
 \textbf{Data and assumptions} - Synthetic discretized data. There are 100 sensors/receivers in total, 25 per side of the square-grid of sensors. Each device sends array to all other devices. Ray-bending is disregarded.
 
-\textbf{Technique used} - Similar to the previously studied papers, the 2D environment is split into cells, and inversion of the slowness model is used to achieve the results. Different conditions on the inversion are considered, such as smoothing, regularization, dampening, and iterative reweighing. These different techniques are compared for the proposed metrics, exploring their advantages for different applications.
+\textbf{Technique used} - Similar to the previously studied papers, the 2D environment is split into cells, and inversion of the slowness model is used to achieve the results. Different conditions on the inversion are considered, such as smoothing, regularization, dampening, and iterative reweighting. These different techniques are compared for the proposed metrics, exploring their advantages for different applications.
 
 \subsubsection{Zhang - 2017}
 
@@ -107,6 +107,7 @@ The table below compiles a comprehensive list of the themes that are commonly ap
 \end{table}
 
 \subsection{Standard discrete travel-time tomography approach}
+\label{subsec:sec2:standard_ttt_approach}
 
 All of the cited papers took an approach similar to the one established below. Differences may arise from ignoring ray bending, type of regularization in the minimization process, amount and positioning of sources and receivers, final purpose for the TTT, or some other particularization or assumption.
 
@@ -173,6 +174,7 @@ From \cref{eq:sec2:def_minimization_bvz}, we can add a regularization term in th
 with $\alpha$ being a controlling parameter. Assuming that the regularization function can be given by $P_{\alpha}(\bvz{i+1}) = \alpha^2\norm{\bvD\bvz{i+1}}^2$ where $\bvD$ is a square matrix, then the solution is
 \begin{equation}
 	\bvG{i} = \inv*{\tr{\bvJ{i}} \bvJ{i} + \alpha^2 \tr{\bvD}\bvD} \bvJ[T]{i}
+	\label{eq:sec2:solution_regularization-problem_simple}
 \end{equation}
 for this inversion step to be possible, it is sufficient that $\bvD$ is a full-rank matrix\footnote{\label{footnote:positive-definite_inversion}By definition, $\bvJ[T]{i} \bvJ{i}$ is positive-semidefinite, $\tr{\bvD}\bvD$ is positive-definite if it is full-rank square matrix, and the sum of a positive-semidefinite and a positive-definite is always positive-definite, this being a sufficient condition for invertibility.}.
 

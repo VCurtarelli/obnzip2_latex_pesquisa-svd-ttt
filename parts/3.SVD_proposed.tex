@@ -60,41 +60,47 @@ in which the last $M-R$ columns, and last $N-R$ rows, are strictly $0$. With thi
 where, by definition of the pseudo-inverse, $\pinv{\bvSi} \pinv{{\bvSi[T]}} \bvSi[T] = \pinv{\bvSi}$. Via properties of the pseudo-inverse, we also have that
 \begin{equation}
 	\bvG{i} = \pinv{\bvJ{i}}
+	\label{eq:sec2:solution-G_pseudo-inverse_shortform}
 \end{equation}
-Although this formulation is completely valid, it will not be used going forward, as making explicit the SVD form of $\pinv{\bvj{i}}$ can be advantageous, in the algebraic steps.
+Both these formulations are strictly equivalent, and unless necessary for further simplifications or useful algebraic manipulations, the $\pinv{\bvJ{i}}$ form will be used.
+
+%Although this formulation is completely valid, it will not be used going forward, as making explicit the SVD form of $\pinv{\bvj{i}}$ can be advantageous, in the algebraic steps.
 
 In the particular case where $R = N$, this implies that $\bvJ[T]{i} \bvJ{i}$ is positive-definite, thus full-rank and straightforwardly invertible. Therefore, the pseudo-inverse isn't necessary in this particular scenario. However, as the pseudo-generalizes the inverse in this case, its application can be useful to highlight and expose properties of the treated problem.
 
 \subsection{Cost function and gradient with SVD}
 
-The gradient for $\bvz{i+1} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ is
+The gradient for $\bvz{i+1} = \pinv{\bvJ{i}} \bvt{\obs}$ is
 \begin{equation}
 	\begin{split}
 		\nabla E(\bvz{i+1})
-		& = 2\pts{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T] \bvV \pinv{\bvSi} \bvU[T] \bvt - \bvV \bvSi[T] \bvU[T] \bvt} \\
-		& = 2\pts{\bvV \bvSi[T] \bvSi \pinv{\bvSi} \bvU[T] \bvt - \bvV \bvSi[T] \bvU[T] \bvt} \\
-		& = 2\pts{\bvV \bvSi[T] \bts{\Id{M;R} - \Id{M}} \bvU[T] \bvt}
+		& = 2\pts{\bvJ[T]{i} \bvJ{i} \pinv{\bvJ{i}} \bvt{\obs} - \bvJ[T]{i} \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T] \bvV \pinv{\bvSi} \bvU[T] \bvt{\obs} - \bvV \bvSi[T] \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bvSi \pinv{\bvSi} \bvU[T] \bvt{\obs} - \bvV \bvSi[T] \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bts{\Id{M;R} - \Id{M}} \bvU[T] \bvt{\obs}}
 	\end{split}
 \end{equation}
 where $\Id{M;R} \in \re^{\sz{M}{M}}$ is a diagonal matrix with the first $R$ entries being $1$, and the remaining $M-R$ ones being $0$; and $\Id{M} \in \re^{\sz{M}{M}}$ is the identity matrix. From this, $\Id{M;R} - \Id{M}$ has its first $R$ diagonal entries $0$, and the last ones $-1$. Since all rows of $\bvSi[T]$ are in the null space of $\Id{M;R} - \Id{M}$ (only the first $R$ entries of any row of $\bvSi[T]$ are non-zero, exactly where $\Id{M;R} - \Id{M}$ is zero), then $\bvSi[T]\bts{\Id{M;R} - \Id{M}} = \bv0$. Therefore,
 \begin{equation}
 	\begin{split}
-		\nabla E(\bvV \pinv{\bvSi} \bvU[T] \bvt)
-		& = 2\pts{\bvV \,\bv0\, \bvU[T] \bvt} \\
+		\nabla E(\pinv{\bvJ{i}} \bvt{\obs})
+		& = 2\pts{\bvV \,\bv0\, \bvU[T] \bvt{\obs}} \\
 		& = \bv0
 	\end{split}
 \end{equation}
 
-This verification ensures that $\bvz{i+1} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ is a solution to the minimization process from \cref{eqs:sec2:iterative_minimization_Ezi}.
+This verification ensures that $\bvz{i+1} = \pinv{\bvJ{i}} \bvt{\obs}$ is a solution to the minimization process from \cref{eqs:sec2:iterative_minimization_Ezi}.
 
 We denote $\bvU{k}$ as the first $k$ columns of $\bvU$, $\bvU{-k}$ as the last $k+1$ columns of $\bvU$, and $\bvU{(j\sim k)}$ as the columns from $j$ to $k$ (inclusive) of $\bvU$. Using this, the cost function can be explicitly obtained, being given by
 \begin{equation}
-	E(\bvz{i+1}) = \bvt[T] \bvU{-R} \bvU[T]{-R} \bvt
+	E(\bvz{i+1}) = \bvt[T]{\obs} \bvU{-R} \bvU[T]{-R} \bvt{\obs}
+	\label{eq:sec2:cost_func_explicit_svd}
 \end{equation}
 
 \subsection{Null-space exploitation}
+\label{subsec:sec3:null-space_exploitation}
 
-We can expand on the solution $\bvz{i+1} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ by exploiting the null space of $\bvJ{i}$. We write
+We can expand on the solution $\bvz{i+1} = \pinv{\bvJ{i}} \bvt{\obs}$ by exploiting the null space of $\bvJ{i}$. We write
 \begin{equation}
 	\bvV = \left[\begin{array}{c|c}
 		\!\bvV{1} & \bvV{2}\!
@@ -102,11 +108,11 @@ We can expand on the solution $\bvz{i+1} = \bvV \pinv{\bvSi} \bvU[T] \bvt$ by ex
 \end{equation}
 where $\bvV{1}\in \re^{\sz{N}{R}}$ are the first $R$ columns of $\bvV$, $\bvV{2} \in \re^{\sz{N}{(N-R)}}$ the remaining $N-R$ columns of $\bvV$, and $[\cdot|\cdot]$ denotes matrix concatenation. Note that $\bvV{2}$ is relative to last $N-R$ zero rows of $\bvSi$, which are strictly $0$; this implies that the columns of $\bvV{2}$ form an orthonormal basis for the null space of $\bvJ{i}$.
 
-Given a coordinate vector $\bvmu \in \re^{\sz{(N-R)}{1}}$, any $\bvz[b] = \bvV{2} \bvmu$ will be within the null space of $\bvSi$, and therefore $\bvJ \bvz[b] = \bvU \bvSi \bvV[T] \bvV{2} \bvmu$ will be by definition $\bv0$. This means that, for $\bvz{i+1} \equiv \bvz{i+1}(\bvmu) = \bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2} \bvmu$, we have
+Given a coordinate vector $\bvmu \in \re^{\sz{(N-R)}{1}}$, any $\bvz[b] = \bvV{2} \bvmu$ will be within the null space of $\bvSi$, and therefore $\bvJ \bvz[b] = \bvU \bvSi \bvV[T] \bvV{2} \bvmu$ will be by definition $\bv0$. This means that, for $\bvz{i+1} \equiv \bvz{i+1}(\bvmu) = \pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu$, we have
 \begin{subequations}
 	\begin{gather}
-		\nabla E(\bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2} \bvmu) = \bv0, \\
-		E(\bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2} \bvmu) = E(\bvV \pinv{\bvSi} \bvU[T] \bvt)
+		\nabla E(\pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu) = \bv0, \\
+		E(\pinv{\bvJ{i}} \bvt{\obs} + \bvV{2} \bvmu) = E(\pinv{\bvJ{i}} \bvt{\obs})
 	\end{gather}
 \end{subequations}
 
@@ -114,31 +120,32 @@ Given a coordinate vector $\bvmu \in \re^{\sz{(N-R)}{1}}$, any $\bvz[b] = \bvV{2
 
 Given another metric, this information on $\bvmu$ can be leveraged to find an optimal solution within this metric, while keeping to $\nabla E(\bvz{i+1}) = \bv0$. For example, we can define a new cost function $F(\bvmu)$, given by
 \begin{equation}
-	F(\bvmu) = \norm{\bvD \pts{\bvV \pinv{\bvSi} \bvU[T] \bvt + \bvV{2}\bvmu}}^2
+	F(\bvmu) = \norm{\bvD \pts{\pinv{\bvJ{i}} \bvt{\obs} + \bvV{2}\bvmu}}^2
+	\label{eq:sec3:cost_function_mu}
 \end{equation}
 where $\bvD$ is a matrix that governs this secondary metric. For example, we take $\bvD$ to be the previously determined discrete approximation for the Laplacian. Given that the column-orthogonality of $\bvV{2}$ implies $\rank{\bvV{2}} = N-R$, and assuming that $\bvD$ is a full-rank matrix, a solution to this problem can be directly found, as
 \begin{equation}
-	\bvmu = -\inv*{\bvV[T]{2} \bvD[T] \bvD\bvV{2}} \bvV[T]{2} \bvD[T] \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt
+	\bvmu = -\inv*{\bvV[T]{2} \bvD[T] \bvD\bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvJ{i}} \bvt{\obs}
 \end{equation}
 
 Via properties of the pseudo-inverse, this can be written as
 \begin{equation}
-	\bvmu = -\pinv*{\bvD \bvV{2}} \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt
+	\bvmu = -\pinv*{\bvD \bvV{2}} \bvD \pinv{\bvJ{i}} \bvt{\obs}
 	\label{eq:sec2:definition_mu_full}
 \end{equation}
 With this, the full solution to both minimization problems is given by
 \begin{equation}
 	\begin{split}
 		\bvz{i+1}
-		& = \bvV \pinv{\bvSi} \bvU[T] \bvt - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD \bvV \pinv{\bvSi} \bvU[T] \bvt \\
-		& = \pts{\Id{N} - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD} \bvV \pinv{\bvSi} \bvU[T] \bvt
+		& = \pinv{\bvJ{i}} \bvt{\obs} - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD \pinv{\bvJ{i}} \bvt{\obs} \\
+		& = \pts{\Id{N} - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD} \pinv{\bvJ{i}} \bvt{\obs}
 	\end{split}
 	\label{eq:sec2:definition_zi+1_with_mu}
 \end{equation}
 
 This solution both has zero gradient in the error function, and has minimum Laplacian within the space of minimum-error solutions. The main insight for this expansion on $\bvmu$ is, by exploiting the null-space of $\bvJ$, to minimize the primary objective within the row space, and to minimize the second objective within the null space. Note that this procedure only works if $\rank{\bvJ{i}} = R < N$. If $R = N$, there is no null space to be exploited, and the second minimization can't be performed.
 
-Another important remark in this scenario is that $\bvV{2} \pinv*{\bvD \bvV{2}} \bvD$ cannot be simplified. This would require that $\bvV{2}$ has linearly independent rows, which it can't given that $M > N-R$. Another important factor is that the gradient of $F(\bvmu)$ is taken with respect to $\mu$. This implies that within the subspace defined by $\bvV{2}$, the found $\bvmu$ is optimal, but by taking the gradient with respect to $\bvV \pinv{\bvSi} \bvU[T] \bvt$, this gradient will not be $\bv0$.
+Another important remark in this scenario is that $\bvV{2} \pinv*{\bvD \bvV{2}} \bvD$ cannot be simplified. This would require that $\bvV{2}$ has linearly independent rows, which it can't given that $N > N-R$. Another important factor is that the gradient of $F(\bvmu)$ is taken with respect to $\mu$. This implies that within the subspace defined by $\bvV{2}$, the found $\bvmu$ is optimal, but by taking the gradient with respect to $\pinv{\bvJ{i}} \bvt{\obs}$, this gradient will not be $\bv0$.
 
 \subsection{SVD truncation}
 
@@ -147,7 +154,7 @@ Another possibility is to truncate $\bvSi$, or to set an arbitrary number of the
 We denote $\bvSi[t]{\tilde{R}}$ as a truncated $\bvSi$ with only its first $\tilde{R}$ diagonal entries non-zero; that is, $N-\tilde{R}$ of its diagonal entries are zero, and $R-\tilde{R}$ were forced to zero in the approximation. Trivially, $\tilde{R} \leq R$ for this to be valid. Given this truncation, it is easy to verify that
 \begin{equation}
 	\begin{split}
-		\bvG(\bvz[t]{i}) & \approx \bvG[t](\bvz[t]{i}) \\
+		\bvG(\bvz{i}) & \approx \bvG[t](\bvz{i}) \\
 		& = \bvV \pinv{\bvSi[t]{\tilde{R}}} \bvU[T]
 	\end{split}
 \end{equation}
@@ -155,10 +162,10 @@ is the optimal solution for the minimization problem with $\bvSi[t]{\tilde{R}}$.
 \begin{equation}
 	\begin{split}
 		\nabla E(\bvz{i+1})
-		& = 2\pts{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T] \bvV \pinv{\bvSi[t]} \bvU[T] \bvt - \bvV \bvSi[T] \bvU[T] \bvt} \\
-		& = 2\pts{\bvV \bvSi[T] \bvSi \pinv{\bvSi[t]} \bvU[T] \bvt - \bvV \bvSi[T] \bvU[T] \bvt} \\
-		& = 2\pts{\bvV \bvSi[T] \bts{\Id{M;\tilde{R}} - \Id{M}} \bvU[T] \bvt} \\
-		& = 2\pts{\sum_{i=\tilde{R}+1}^{R} \sigma_i \bvv{i} \bvu[T]{i}} \bvt
+		& = 2\pts{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T] \bvV \pinv{\bvSi[t]} \bvU[T] \bvt{\obs} - \bvV \bvSi[T] \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bvSi \pinv{\bvSi[t]} \bvU[T] \bvt{\obs} - \bvV \bvSi[T] \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bts{\Id{M;\tilde{R}} - \Id{M}} \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\sum_{i=\tilde{R}+1}^{R} \sigma_i \bvv{i} \bvu[T]{i}} \bvt{\obs}
 	\end{split}
 \end{equation}
 where $\bvv{i}$ and $\bvu{i}$ are the $i$-th row of $\bvV$ and $\bvU$ respectively, and $\sigma_i$ is the $i$-th diagonal element of $\bvSi$. The smaller the entries of $\bvSi$ that were set to zero ($\sigma_i$ for $i \in [\tilde{R}+1,~R]$), the smaller the gradient, and the closer the obtained solution would be to the space of optimal ($\nabla E = 0$) solutions.
@@ -167,22 +174,133 @@ We highlight that $\bvSi[t] \bvV[T] \bvV{2} \bvmu$ is still a zero matrix, given
 
 With the previous formulation, the cost function with the truncated SVD will be
 \begin{equation}
-	E(\bvz[t]{i+1}) = \bvt[T] \bvU{-\tilde{R}} \bvU[T]{-\tilde{R}} \bvt
+	E(\bvz{i+1}) = \bvt[T]{\obs} \bvU{-\tilde{R}} \bvU[T]{-\tilde{R}} \bvt{\obs}
 \end{equation}
 or yet, the change in the cost function, compared to that with no truncated singular values, is given by
 \begin{equation}
-	\Delta E(\bvz[t]{i+1}) = \bvt[T]  \bvU{\tilde{R}\sim R} \bvU[T]{\tilde{R}\sim R} \bvt
+	\Delta E(\bvz{i+1}) = \bvt[T]{\obs}  \bvU{\tilde{R}\sim R} \bvU[T]{\tilde{R}\sim R} \bvt{\obs}
 \end{equation}
 where the columns of $\bvU{\tilde{R} \sim R}$ are exactly the columns of the truncated singular values.
 
-Note that this error is independent of the truncated singular values. Therefore, the choice of $\lambda$'s to truncate isn't related to the increase in the cost function.
+Note that this error $\Delta E$ is independent of the truncated singular values. Therefore, the choice of $\lambda$'s to truncate isn't related to the increase in the cost function. The choice of which singular values to truncate will dictate the $\bvU{\tilde{R}\sim R}$ matrix which dictates $\Delta E$, but the singular values' magnitudes aren't relevant.
 
-\subsection{Spatial super-sampling}
+\section{Other proposed ideas}
 
-On all previous discussion, it was assumed that $M$ (the number of measurements) is greater than $N$ (the number of discrete cells). However, this requires a large distribution of devices, which isn't necessarily practically feasible.
+This section compiles other proposed ideas that aren't directly linked to SVD, but also aren't covered in the exposed literature, and could result in useful results.
 
-Since the proposed SVD approach generalizes the traditional inverse (as the scenario where $R = N$ can also be solved using SVD), its use will be continued in this case.
+\subsection{Weighted minimization}
 
-In a scenario where $M < N$, the product $\bvJ[T]{i} \bvJ{i}$ has at most rank $M$, and with it being an $\sz{N}{N}$ matrix, it is guaranteed to be non-invertible. For the previous techniques, this forces the use of a regularization matrix, or the use of non-inverting zero-gradient solvers. For the proposed SVD-based inversion, this just ensures that at least $N-M$ columns of $\bvV$ are within the basis for $\bvJ{i}$'s null-space, guaranteeing the existence of a minimization on $\mu$ and the proposed null-space exploiting step.
+In previously presented methods, it is assumed that all measurements are equally important. However, this may not be the case. As an example, consider that some of the measurements were taken when the body of water was being disturbed by heavy water currents, affecting the position of the sensors and the perceived sound speed in water. These measurements are useful, but their data is knowingly (\textit{a priori}) less accurate and reliable than that of other measurements, and therefore a weighting step for these measurements can be taken.
+
+Mathematically, this is modeled by adapting \cref{subeq:sec2:iterative_minimization:eq1}. This equation can be expanded, and written as
+\begin{equation}
+	\bvz{i+1} = \arg \min_{\bvz} \sum_{i=1}^{M} \pts{\bvj[T]{m,i} \bvz - t_{\obs;m}}^2
+\end{equation}
+in which $\bvj{m,i}$ is the distance traversed in each $i$-th cell, by the $m$-th ray, and $t_{\obs;m}$ is the observed total travel-time for the $m$-th ray. With this formulation, a weighting step can be easily added, resulting in
+\begin{equation}
+	\bvz{i+1} = \arg \min_{\bvz} \sum_{i=1}^{M} w_i \pts{\bvj[T]{m,i} \bvz - t_{\obs;m}}^2
+\end{equation}
+where $w_i > 0$ is the weight for the $i$-th measurement. Returning to the matricial formulation, we get
+\begin{equation}
+	\bvz{i+1} = \arg \min_{\bvz} \norm{\bvW \pts{\bvJ{i} \bvz - \bvt{\obs}}}^2
+\end{equation}
+where $\bvW$ is a diagonal matrix, such that the $\el{\bvW}[i,i] = \Sqrt{w_i}$. Using the SVD and pseudo-inverse approach as established, the solution to this minimization is
+\begin{equation}
+	\bvG{i} = \pinv*{\bvW \bvJ{i}} \bvW
+	\label{eq:sec3:Gi_weighted_minim}
+\end{equation}
+
+In general, this formulation can't be simplified, considering that $\bvJ{i}$ is a tall matrix, presenting linearly dependence on its rows.
+
+
+\subsection{Spatial over-modeling}
+
+Previously, it was assumed that $M$ (the number of measurements) is greater than $N$ (the number of discrete cells). However, this requires a large distribution of devices, which isn't necessarily practically feasible. Therefore, the development/adaptation of theories for an over-modeled (more model variables than measurements) scenario can be useful for cases in which the spatial resolution in the cells is finer than the physical resolution produced by the devices' distribution.
+
+In a scenario where $M < N$,  $\rank{\bvJ[T]{i} \bvJ{i}} = \rank{\bvJ{i}} = R \leq M$, and with $\bvJ[T]{i} \bvJ{i} \in \re^{\sz{N}{N}}$, the product is a rank-deficient matrix, therefore guaranteed to be non-invertible. For the literature-established standard method (\cref{subsec:sec2:standard_ttt_approach}), this forces the use of a regularization matrix, or the use of non-inverting zero-gradient solvers. For the proposed SVD-based inversion, note that at no point it was assumed that $M \geq N$, unlike in the literature review portion, where for invertibility of $\bvJ[T]{i} \bvJ{i}$ this property was assumed. For the proposed structure, $M < N$ ensures that $N-R > 0$, and with this the existence of null-space for $\bvJ{i}$, ensuring the possibility for a minimization on $\mu$ through the proposed null-space exploiting step.
+
+The previously obtained formulation (from \cref{eq:sec2:solution-G_pseudo-inverse,eq:sec2:solution-G_pseudo-inverse_shortform}) is still valid. The fact that $R$ can be equal to $M$ does not change the proposed framework, since at most $\Id{M;R} = \Id$ if $R = M$, and the gradient is still equal to $0$. The null-space exploitation, secondary metric minimization, and SVD truncation processes work exactly the same, but with a guarantee of existence of $\nul{\bvJ{i}}$.
+
+Assuming $R = M < N$, then $\bvU{-R} = []_{\sz{0}{M}}$ is an empty vector, and therefore through \cref{eq:sec2:cost_func_explicit_svd} we have $E(\bvz{i+1}) = 0$. This means that, if all measurements are linearly independent ($R=M$), it is possible to achieve zero error in the measured times. For linearly dependent measurements, there can be errors in case of mismatched values in the measurements. For weighted minimization, a linear independence in the rows of $\bvJ{i}$ implies that \cref{eq:sec3:Gi_weighted_minim} can be simplified to $\pinv{\bvJ{i}}$. Intuitively, this corresponds to there being more than enough information for the minimization process, and giving different weights to the measurements doesn't affect the result.
+
+\subsection{Perturbation modeling}
+
+We now assume that the slowness $\bvz{i}$ is composed of constant term $\bvz{0}$, and a perturbation term $\bvz[t]{i}$, as
+\begin{equation}
+	\bvz{i} = \bvz{0} + \bvz[t]{i}
+\end{equation}
+
+With this,
+\begin{equation}
+	\begin{split}
+		\bvz{i+1}
+		& = \arg \min_{\bvz} \norm{\bvJ{i} \bvz - \bvt{\obs}}^2 \\
+		& = \arg \min_{\bvz[t]} \norm{\bvJ{i} \bvz[t] - \pts{\bvt{\obs} - \bvJ{i}\bvz{0}}}^2
+	\end{split}
+\end{equation}
+whose solution is
+\begin{equation}
+	\bvz{i+1} =  \pinv{\bvJ{i}} \bvt{\obs} - \bvV{2}\bvV[T]{2} \bvz{0}
+	\label{eq:sec4:bvz_perturbation_model}
+\end{equation}
+where $\bvV{2}$ are the last $R$ columns of $\bvV$ corresponding to the null-space of $\bvJ{i}$ (see \cref{subsec:sec3:null-space_exploitation}).
+
+Comparing with \cref{eq:sec2:definition_zi+1_with_mu}, we have that these formulations are very similar, with $\bvD = \Id$ and (supposing that) $\pinv{\bvJ{i}} \bvt{\obs} = \bvz{0}$. Note that the constant term $\bvz{0}$ doesn't need to be constant over the entire body of water, and could be constructed by taking the average over sections of the body of water from previous measurements and estimations.
+
+\subsubsection{Regularization}
+
+This framework can also be paired with a regularization term. This regularization can be chosen on either the slowness model $\bvz{i+1}$, or on the perturbation vector $\bvz[t]{i}$. For the former (regularization on slowness), this leads to
+\begin{equation}
+	\bvz{i+1} = \arg\min_{\bvz[t]} \norm{\bvJ{i} \bvz[t] - \pts{\bvt{\obs} - \bvJ{i} \bvz{0}}}^2 + \alpha^2\norm{\bvD \pts{\bvz[t] + \bvz{0}}}^2 
+\end{equation}
+whose solution is given by
+\begin{subequations}
+	\begin{gather}
+		\bvz[t]{i+1} = \inv*{\bvJ[T]{i} \bvJ{i} + \alpha^2 \bvD[T] \bvD} \bvJ[T] \bvt{\obs} - \bvz{0} \\
+		\bvz{i+1} = \inv*{\bvJ[T]{i} \bvJ{i} + \alpha^2 \bvD[T] \bvD} \bvJ[T] \bvt{\obs}
+	\end{gather}
+\end{subequations}
+which leads to the same solution as using the traditional regularization in \cref{eq:sec2:solution_regularization-problem_simple}, without the perturbation modeling step.
+
+For the latter (regularization on perturbation), the formulation is
+\begin{equation}
+	\bvz{i+1} = \arg\min_{\bvz[t]} \norm{\bvJ{i} \bvz[t] - \pts{\bvt{\obs} - \bvJ{i} \bvz{0}}}^2 + \alpha^2\norm{\bvD \pts{\bvz[t]}}^2 
+	\label{eq:sec3:minimization_perturbation-with-regularization_formulation}
+\end{equation}
+which results in
+\begin{subequations}
+	\begin{gather}
+		\bvz[t]{i+1} = \inv*{\bvJ[T]{i} \bvJ{i} + \alpha^2 \bvD[T] \bvD} \pts{\bvJ[T]{i} \bvt{\obs} - \bvJ[T]{i} \bvJ{i} \bvz{0}} \\
+		\bvz{i+1} = \inv*{\bvJ[T]{i} \bvJ{i} + \alpha^2 \bvD[T] \bvD} \bvt{\obs} + \pts{\Id{N} - \inv*{\bvJ[T]{i} \bvJ{i} + \alpha^2 \bvD[T] \bvD} \bvJ[T]{i} \bvJ{i}} \bvz{0}
+	\end{gather}
+\end{subequations}
+
+The first term here is identical to the original regularization problem's solution in \cref{eq:sec2:solution_regularization-problem_simple}, and the second-one gives a correction that penalizes deviating from the constant term.
+
+\subsubsection{Null-space exploiting}
+
+Although this formulation based on perturbation upon the average behavior can be useful, its application allied with the proposed null-space exploiting would render the perturbation modeling useless, given that $\bvV{2}\bvV[T]{2} \bvz{0}$ is within the null-space of $\bvJ{i}$, and this term would be dismissed\footnote{By definition, the secondary minimization traverses the null-space of $\bvJ{i}$ searching for a minimum in the secondary metric, and the addition of the $\bvV{2}\bvV[T]{2} \bvz{0}$ term would only dislocate the solution by this value, canceling with its addition in \cref{eq:sec4:bvz_perturbation_model}.} in the minimization process for any secondary given metric.
+
+Mathematically, \cref{eq:sec3:cost_function_mu} with \cref{eq:sec4:bvz_perturbation_model} results in
+\begin{equation}
+	F(\bvmu) = \norm{\pinv{\bvJ{i}} \bvt{\obs} - \bvV{2}\bvV[T]{2} \bvz{0} + \bvV{2} \bvmu}^2
+\end{equation}
+whose minimization leads to
+\begin{equation}
+	\begin{split}
+		\bvmu
+		& = \inv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \bvV{2} \bvV[T]{2} \bvz{0} - \pinv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvJ{i}} \bvt{\obs} \\
+		& = \bvV[T]{2} \bvz{0} - \inv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvJ{i}} \bvt{\obs}
+	\end{split}
+\end{equation}
+where the inverse is taken given that both $\bvV{2}$ and $\bvD$ are full-rank matrices, by definition. From this,
+\begin{equation}
+	\begin{split}
+		\bvz{i+1}
+		& = \pinv{\bvJ{i}} \bvt{\obs} - \bvV{2}\bvV[T]{2} \bvz{0} + \bvV{2} \bvV[T]{2} \bvz{0} - \inv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvJ{i}} \bvt{\obs} \\
+		& = \pinv{\bvJ{i}} \bvt{\obs} - \inv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvJ{i}} \bvt{\obs}
+	\end{split}
+\end{equation}
+which is identical to \cref{eq:sec2:definition_zi+1_with_mu}, after some algebraic manipulations and appropriate use of the pseudo-inverse. Therefore, the application of a secondary minimization step nullifies the effects of perturbation modeling.
 }
 \newpage
