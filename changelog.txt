@@ -1,0 +1,6 @@
+v1.0.251009
+	Separation of "Fundamentals of travel-time tomography" and "SVD pseudo-inversion" to different files and sections
+	Changed numbering in "3. SVD pseudo-inversion" from subsubsections to subsections
+	Added "3.6 Spatial super-sampling"
+	Changes in notation and text
+	
