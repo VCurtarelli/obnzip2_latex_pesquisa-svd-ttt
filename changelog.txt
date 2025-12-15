@@ -4,4 +4,5 @@ v1.0.251009
 	Added "3.6 Weighted minimization"
 	Added "3.7 Spatial over-modeling"
 	Changes in notation and text
-	
+v1.0.251215
+	Many changes to text.

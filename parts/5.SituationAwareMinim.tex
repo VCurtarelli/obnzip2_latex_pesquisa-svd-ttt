@@ -1,0 +1,25 @@
+\section{Situation-aware modeling}
+
+Although the previous simulations were important to compare the two techniques, showing that their performance is almost identical in both tested scenarios, appropriate results are still necessary in practical situations. In these, the following considerations are taken:
+\begin{itemize}
+	\item The OBNs positioned at the ocean floor act as sources, and a vehicle (either a ROV or a streamer) that traverses near the surface acts as a receiver;
+	\item Vertically sensing the environment with ROVs isn't financially, and should be avoided;
+	\item The speed of sound behaves linearly below the SOFAR channel, being feasible to model it by its depth with reasonable accuracy.
+\end{itemize}
+
+\input{figures/5.layered_model.tex}
+
+In practice, both the vehicle and the OBNs act as sources and receivers, with the measurements being done over time for different vehicle positions, assessing the travel-time between the vehicle communicating with the OBN, this processing the commands, and responding. For simplicity, we treat different measurements as occurring simultaneously (assuming the environment's behavior is sufficiently stationary in time), and that the wave travel is only one-way. Also from the considerations, we assume that the receivers can be placed freely up to a $500\si{\meter}$ depth. This leads to a model as in \cref{fig:sec5:layered_model}, where there are 3 layers: A ($0-500\si{\meter}$), B ($500-1000\si{\meter}$), and C ($1000\si{\meter}-\text{floor}$). Notably, layer A is the one where the vehicles traverse, taking measurements, and layer C is the one that can be modeled \textit{a priori}, with its model being refined in the optimization.
+
+Given that the previous results show that both the literature and the proposed approaches are almost identical, the literature one will be chosen, given its more simple mathematical formulation. This, together with the consideration of feasibly modeling the sound speed below a certain threshold, leads to
+\begin{equation}
+	E(\bvs) = \norm{\bvR \bvs - \bvt{\obs}}^2 + \alpha^2 \norm{\bvD \bvs}^2 + \beta^2 \norm{\calI\pts{\bvs - \bvs{\obs}}}^2
+\end{equation}
+in which $\alpha$ and $\beta$ are regularization parameters; $\calI$ denotes an $\sz{N}{N}$ diagonal matrix, with its $i$-th element being $1$ if its corresponding cell (element of $\bvs$) is in the C layer, and $0$ otherwise; and $\bvs{\obs}$ is a model for the expected sound speed, only being relevant in the C layer. From the literature approach, the solution to this problem is
+\begin{equation}
+	{\bvs{i+1}} = \inv*{\bvR[T]{i} \bvR{i} + \alpha^2 \bvD[T] \bvD + \beta^2 \tr{\calI} \calI} \pts{\bvR[T]{i} \bvt{\obs} + \beta^2 \tr{\calI}\calI \bvs{\obs}}
+\end{equation}
+
+Note that only the $\bvR{i}$ term depends on the previous $\bvs{i}$ iteration, with the others being either model constants ($\bvD$ and $\calI$), measurement constants ($\bvt{\obs}$ is obtained from the surveys, and $\bvs{\obs}$ from known environmental data), and adjustable parameters ($\alpha$ and $\beta$). A larger $\alpha$ will favor a less varying environment, trading accuracy for smoothness; and a larger $\beta$ will push for a slowness profile that is closer to the model $\bvs{\obs}$.
+
+Another possibility is for $\calI$ to more smoothly transition between the modeled (C) and non-modeled (A and B) layers. For example, it can be $0$ for cells at a depth of up to $900\si{\meter}$, $1$ below $1100\si{\meter}$, and have a transition step between these two depths. For now, we will take the discontinuous approach, switching at the $1\si{\kilo\meter}$ depth.

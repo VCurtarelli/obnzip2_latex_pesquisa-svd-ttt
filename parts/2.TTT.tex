@@ -115,68 +115,68 @@ In these regards, the most complete papers are the ones by Ali \cite{ali_opensou
 
 \subsubsection{Basic framework}
 
-Let's assume the environment to be modeled is divided into an $\sz{N_1}{N_2}$ grid of cells (horizontal $\mtimes$ vertical), with a total of $N = N_1\cdot N_2$ cells. A total of $M$ rays are produced, between any number of sources and receivers. We denote $\bvz \in \re^{\sz{N}{1}}$ positive vector representing the slowness in each cell, and $\bvj{m}(\bvz) \in \re^{\sz{N}{1}}$ vector containing the length traversed in each cell, by the $m$-th ray. The length-vector $\bvj{m}(\bvz)$ is commonly obtained externally via a fast-marching algorithm or another solver for the Eikonal equation, considering Fermat's principle of least time, and Snell's law $\bvj{m}(\bvz)$. $\bvj{m}(\bvz)$ can also be obtained directly if one considers an SSF with small perturbations, where ray-bending effects can be ignored, and the path is assumed linear between source and receiver. With this, the travel-time for the $m$-th ray is $t_m$, being given by
+Let's assume the environment to be modeled is divided into an $\sz{N_1}{N_2}$ grid of cells (horizontal $\mtimes$ vertical), with a total of $N = N_1\cdot N_2$ cells. A total of $M$ rays are produced, between any number of sources and receivers. We denote $\bvs \in \re^{\sz{N}{1}}$ positive vector representing the slowness in each cell, and $\bvR{m}(\bvs) \in \re^{\sz{N}{1}}$ vector containing the length traversed in each cell, by the $m$-th ray. The length-vector $\bvR{m}(\bvs)$ is commonly obtained externally via a fast-marching algorithm or another solver for the Eikonal equation, considering Fermat's principle of least time, and Snell's law $\bvR{m}(\bvs)$. $\bvR{m}(\bvs)$ can also be obtained directly if one considers an SSF with small perturbations, where ray-bending effects can be ignored, and the path is assumed linear between source and receiver. With this, the travel-time for the $m$-th ray is $t_m$, being given by
 \begin{equation}
-	t_m(\bvz) = \tr{\bvj{m}}(\bvz) \bvz
+	t_m(\bvs) = \tr{\bvr{m}}(\bvs) \bvs
 \end{equation}
 
-Now we let $\bvt(\bvz) \in \re^{\sz{M}{1}}$ vector of travel-times for the current model, for all $M$ considered rays; and $\bvJ(\bvz) \in \re^{\sz{M}{N}}$ matrix, where the $m$-th row is $\tr{j_m}(\bvz)$. With this, our minimization problem becomes minimizing the error $E(\bvz)$, this being translated into
+Now we let $\bvt(\bvs) \in \re^{\sz{M}{1}}$ vector of travel-times for the current model, for all $M$ considered rays; and $\bvR(\bvs) \in \re^{\sz{M}{N}}$ matrix, where the $m$-th row is $\tr{j_m}(\bvs)$. With this, our minimization problem becomes minimizing the error $E(\bvs)$, this being translated into
 \begin{equation}
-	\opt{\bvz} = \arg\min_{\bvz} E(\bvz) = \norm{\bvJ(\bvz) \bvz - \bvt{\obs}}^2
+	\opt{\bvs} = \arg\min_{\bvs} E(\bvs) = \norm{\bvR(\bvs) \bvs - \bvt{\obs}}^2
 	\label{eq:sec2:def_minimization_bvz}
 \end{equation}
 where $\bvt{\obs}$ is the observed travel-time for each ray.
 
-Note that this problem is non-linear and recursive: the solution to the ray paths, given by $\bvJ(\bvz)$, depends on the slowness field $\bvz$. Meanwhile, the field model depends on the achieved solution for the ray paths, $\bvJ(\bvz)$. Given the non-linearity of the problem, this search is usually done iteratively, following
+Note that this problem is non-linear and recursive: the solution to the ray paths, given by $\bvR(\bvs)$, depends on the slowness field $\bvs$. Meanwhile, the field model depends on the achieved solution for the ray paths, $\bvR(\bvs)$. Given the non-linearity of the problem, this search is usually done iteratively, following
 \begin{subequations}
 	\begin{gather}
-		\bvz{i+1} = \arg\min_{\bvz{i+1}} E(\bvz{i+1}) = \norm{\bvJ(\bvz{i}) \bvz{i+1} - \bvt{\obs}}^2 
+		\bvs{i+1} = \arg\min_{\bvs{i+1}} E(\bvs{i+1}) = \norm{\bvR(\bvs{i}) \bvs{i+1} - \bvt{\obs}}^2 
 		\label{subeq:sec2:iterative_minimization:eq1}\\
-		\nabla E(\bvz{i+1}) = 2\tr{\bvJ}(\bvz{i}) \pts{\bvJ(\bvz{i}) \bvz{i+1} - \bvt{\obs}}
+		\nabla E(\bvs{i+1}) = 2\tr{\bvR}(\bvs{i}) \pts{\bvR(\bvs{i}) \bvs{i+1} - \bvt{\obs}}
 		\label{subeq:sec2:iterative_minimization:eq2}
 	\end{gather}
 	\label{eqs:sec2:iterative_minimization}
 \end{subequations}
-in which the gradients are taken with respect to each of the slownesses in $\bvz{i+1}$. Assuming that $\tr{\bvJ}(\bvz{i})\bvJ(\bvz{i})$ is invertible, then the solution to this minimization -- which translates to $\nabla E(\bvz{i+1}) = \bv0$ -- is
+in which the gradients are taken with respect to each of the slownesses in $\bvs{i+1}$. Assuming that $\tr{\bvR}(\bvs{i})\bvR(\bvs{i})$ is invertible, then the solution to this minimization -- which translates to $\nabla E(\bvs{i+1}) = \bv0$ -- is
 \begin{subequations}
 	\begin{gather}
-		\bvz{i+1} = \bvG(\bvz{i}) \bvt{\obs} \\
-		\bvG(\bvz{i}) = \inv*{\tr{\bvJ}(\bvz{i}) \bvJ(\bvz{i})} \tr{\bvJ}(\bvz{i})
+		\bvs{i+1} = \bvG(\bvs{i}) \bvt{\obs} \\
+		\bvG(\bvs{i}) = \inv*{\tr{\bvR}(\bvs{i}) \bvR(\bvs{i})} \tr{\bvR}(\bvs{i})
 	\end{gather}
 	\label{eqs:sec2:inversion_zi+1}
 \end{subequations}
 
-Since $\bvJ(\bvz{i})$ is updated repeatedly, so has to be $\bvG(\bvz{i})$, and thus the solution is iterative. Although $\bvJ(\bvz{i})$ and $\bvG(\bvz{i})$ directly depend on the acquired discrete slowness fields (via the FMM or FSM solvers), the dependence on the iterator $i$ is much more relevant. For this, and for economy of notation, we let $\bvJ{i} \equiv \bvJ(\bvz{i})$, and $\bvG{i} = \bvG(\bvz{i})$.
+Since $\bvR(\bvs{i})$ is updated repeatedly, so has to be $\bvG(\bvs{i})$, and thus the solution is iterative. Although $\bvR(\bvs{i})$ and $\bvG(\bvs{i})$ directly depend on the acquired discrete slowness fields (via the FMM or FSM solvers), the dependence on the iterator $i$ is much more relevant. For this, and for economy of notation, we let $\bvR{i} \equiv \bvR(\bvs{i})$, and $\bvG{i} = \bvG(\bvs{i})$.
 
 \subsubsection{Rank-deficient minimization}
 \label{subsubsec:rank-definicient-minimization}
 
-For \cref{eqs:sec2:inversion_zi+1}, it is crucial that $\bvJ[T]{i}\bvJ{i}$ is invertible. Given that $\bvJ{i}  \in \re^{\sz{M}{N}}$, then $\bvJ[T]{i}\bvJ{i}  \in \re^{\sz{N}{N}}$. It is easy to see that $\rank{\bvJ{i}} = N$ and $N \leq M$ are necessary and sufficient for the inversion to be possible. Intuitively, this translates to there being more measurements $M$ than unknowns $N$, that at least $N$ of the measurements are meaningful (linearly independent), and that any cell is represented by at least one ray.
+For \cref{eqs:sec2:inversion_zi+1}, it is crucial that $\bvR[T]{i}\bvR{i}$ is invertible. Given that $\bvR{i}  \in \re^{\sz{M}{N}}$, then $\bvR[T]{i}\bvR{i}  \in \re^{\sz{N}{N}}$. It is easy to see that $\rank{\bvR{i}} = N$ and $N \leq M$ are necessary and sufficient for the inversion to be possible. Intuitively, this translates to there being more measurements $M$ than unknowns $N$, that at least $N$ of the measurements are meaningful (linearly independent), and that any cell is represented by at least one ray.
 
-In situations where $\bvJ[T]{i}\bvJ{i}$ isn't full-rank, other procedures should be used for finding $\bvG{i}$. The most popular ones (used by \cite{ali_opensource_2019,hormati_robust_2010,zhang_nonlinear_1998,tang_travel_2024}) are techniques derived from the gradient descent method \cite{ruder_overview_2017,haji_comparison_2021}, among which the conjugate gradient \cite{yahaya_descent_2023,hager_survey_2006} stands out. {\proposed Another option, which hasn't been studied in the context of TTT, is through singular value decomposition (SVD) \cite{barata_moore_2012,golub_calculating_1965} -based inversion \cite{brand_fast_2006,chen_treatment_2006}. Other solvers \cite{carson_new_2017,douglas_solving_2016,ku_novel_2013,beik_iterative_2018} are also available and usable in this application, venues which are yet to be explored.}
+In situations where $\bvR[T]{i}\bvR{i}$ isn't full-rank, other procedures should be used for finding $\bvG{i}$. The most popular ones (used by \cite{ali_opensource_2019,hormati_robust_2010,zhang_nonlinear_1998,tang_travel_2024}) are techniques derived from the gradient descent method \cite{ruder_overview_2017,haji_comparison_2021}, among which the conjugate gradient \cite{yahaya_descent_2023,hager_survey_2006} stands out. {\proposed Another option, which hasn't been studied in the context of TTT, is through singular value decomposition (SVD) \cite{barata_moore_2012,golub_calculating_1965} -based inversion \cite{brand_fast_2006,chen_treatment_2006}. Other solvers \cite{carson_new_2017,douglas_solving_2016,ku_novel_2013,beik_iterative_2018} are also available and usable in this application, venues which are yet to be explored.}
 
-With this brief discussion, moving forward we assume that the kernel $\tr{\bvJ{i}}\bvJ{i}$ -- and its modifications via regularization, blurring, or others -- is invertible; situations where this doesn't apply can be treated with the mentioned techniques.
+With this brief discussion, moving forward we assume that the kernel $\tr{\bvR{i}}\bvR{i}$ -- and its modifications via regularization, blurring, or others -- is invertible; situations where this doesn't apply can be treated with the mentioned techniques.
 
 \subsubsection{Addition of regularization}
 
-Depending on the chosen grid's fineness, it is possible that not every cell has a ray passing through it. This causes both an ill-defined problem, given that this cell's slowness can't be determined by minimizing the error $E(\bvz)$; and a non-smooth solution, which isn't expected for the reconstruction of a physically coherent slowness/velocity field.
+Depending on the chosen grid's fineness, it is possible that not every cell has a ray passing through it. This causes both an ill-defined problem, given that this cell's slowness can't be determined by minimizing the error $E(\bvs)$; and a non-smooth solution, which isn't expected for the reconstruction of a physically coherent slowness/velocity field.
 
 A regularization function can both help solve the ill-definition of the problem, improving the chances of it having a unique solution; and impose some condition on the solution vector, be it smoothness, noise/mismatch reduction, or other metrics. Choosing an adequate regularization can also help generalize the found solution to a continuum, separating the minimization process from the chosen spatial model discretization \cite{zhang_nonlinear_1998,delprat-jannaud_illposed_1993}.
 
-From \cref{eq:sec2:def_minimization_bvz}, we can add a regularization term in the form of $P_{\alpha}(\bvz{i+1})$, such that the iterative form of $\bvz{i+1}$ from \cref{eqs:sec2:iterative_minimization} becomes
+From \cref{eq:sec2:def_minimization_bvz}, we can add a regularization term in the form of $P_{\alpha}(\bvs{i+1})$, such that the iterative form of $\bvs{i+1}$ from \cref{eqs:sec2:iterative_minimization} becomes
 \begin{subequations}
 	\begin{gather}
-		\bvz{i+1} = \arg\min_{\bvz{i+1}} E(\bvz{i+1}) = \norm{\bvJ{i} \bvz{i+1} - \bvt{\obs}}^2 + P_\alpha(\bvz{i+1})\\
-		\nabla E(\bvz{i+1}) = 2\bvJ[T]{i} \pts{\bvJ{i} \bvz{i+1} - \bvt{\obs}} + \nabla P_{\alpha}(\bvz{i+1})
+		\bvs{i+1} = \arg\min_{\bvs{i+1}} E(\bvs{i+1}) = \norm{\bvR{i} \bvs{i+1} - \bvt{\obs}}^2 + P_\alpha(\bvs{i+1})\\
+		\nabla E(\bvs{i+1}) = 2\bvR[T]{i} \pts{\bvR{i} \bvs{i+1} - \bvt{\obs}} + \nabla P_{\alpha}(\bvs{i+1})
 	\end{gather}
 	\label{eqs:sec2:iterative_minimization_Ezi}
 \end{subequations}
-with $\alpha$ being a controlling parameter. Assuming that the regularization function can be given by $P_{\alpha}(\bvz{i+1}) = \alpha^2\norm{\bvD\bvz{i+1}}^2$ where $\bvD$ is a square matrix, then the solution is
+with $\alpha$ being a controlling parameter. Assuming that the regularization function can be given by $P_{\alpha}(\bvs{i+1}) = \alpha^2\norm{\bvD\bvs{i+1}}^2$ where $\bvD$ is a square matrix, then the solution is
 \begin{equation}
-	\bvG{i} = \inv*{\tr{\bvJ{i}} \bvJ{i} + \alpha^2 \tr{\bvD}\bvD} \bvJ[T]{i}
+	\bvG{i} = \inv*{\tr{\bvR{i}} \bvR{i} + \alpha^2 \tr{\bvD}\bvD} \bvR[T]{i}
 	\label{eq:sec2:solution_regularization-problem_simple}
 \end{equation}
-for this inversion step to be possible, it is sufficient that $\bvD$ is a full-rank matrix\footnote{\label{footnote:positive-definite_inversion}By definition, $\bvJ[T]{i} \bvJ{i}$ is positive-semidefinite, $\tr{\bvD}\bvD$ is positive-definite if it is full-rank square matrix, and the sum of a positive-semidefinite and a positive-definite is always positive-definite, this being a sufficient condition for invertibility.}.
+for this inversion step to be possible, it is sufficient that $\bvD$ is a full-rank matrix\footnote{\label{footnote:positive-definite_inversion}By definition, $\bvR[T]{i} \bvR{i}$ is positive-semidefinite, $\tr{\bvD}\bvD$ is positive-definite if it is full-rank square matrix, and the sum of a positive-semidefinite and a positive-definite is always positive-definite, this being a sufficient condition for invertibility.}.
 
 The regularization matrix $\bvD$ can be chosen to improve a range of metrics. Choosing $\bvD = \Id$ \cite{phillips_traveltime_1991} results in the minimization also considering the root mean-square (RMS) of the slowness vector; this is equivalent to considering the presence in white noise in the measurements, and trading model accurateness for noise rejection. Choosing $\bvD z \approx \nabla^2 s(x,y)$, (discretely) approximating the Laplacian of the (continuous) slowness field \cite{zhang_nonlinear_1998,ali_opensource_2019}, resulting in a minimization that penalizes the Laplacian of the achieved slowness field; that is, a solution that also considers the curvature/jumps in the SSF, searching for a smoother field.
 
@@ -184,11 +184,11 @@ The regularization matrix $\bvD$ can be chosen to improve a range of metrics. Ch
 
 {\proposed Another possibility that is still open for exploration is the use of multiple regularization functions. For example, a leveraged usage of both previously presented ones (white-noise regularization, and Laplacian penalization) can lead to a good smoothness on the SSF, while maintaining a guaranteed-invertible kernel. That is, we say that
 	\begin{equation}
-		E(\bvz{i+1}) = \norm{\bvJ{i} \bvz{i+1} - \bvt{\obs}}^2 + \alpha^2\norm{\bvD\bvz{i+1}}^2 + \beta^2 \norm{\bvz{i+1}}^2
+		E(\bvs{i+1}) = \norm{\bvR{i} \bvs{i+1} - \bvt{\obs}}^2 + \alpha^2\norm{\bvD\bvs{i+1}}^2 + \beta^2 \norm{\bvs{i+1}}^2
 	\end{equation}
 	for which
 	\begin{equation}
-		\bvG{i} = \inv*{\tr{\bvJ{i}} \bvJ{i} + \alpha^2 \tr{\bvD}\bvD + \beta^2 \Id} \bvJ[T]{i}
+		\bvG{i} = \inv*{\tr{\bvR{i}} \bvR{i} + \alpha^2 \tr{\bvD}\bvD + \beta^2 \Id} \bvR[T]{i}
 	\end{equation}
 	
 	The brackets term is guaranteed to be positive-definite (\cref{footnote:positive-definite_inversion}), and therefore safely invertible.
@@ -197,24 +197,24 @@ The regularization matrix $\bvD$ can be chosen to improve a range of metrics. Ch
 
 Another interesting tool that is seen in the literature \cite{phillips_traveltime_1991,meyerholtz_convolutional_1989} is to employ a blur on the gradient. That is, we define that
 \begin{equation}
-	E(\bvz{i+1}) = \norm{\bvJ[d]{i} \bvz[d]{i+1} - \bvt{\obs}}^2 + P_\alpha(\bvz[d]{i+1})
+	E(\bvs{i+1}) = \norm{\bvR[d]{i} \bvs[d]{i+1} - \bvt{\obs}}^2 + P_\alpha(\bvs[d]{i+1})
 \end{equation}
-where $\bvJ[d]{i} = \bvJ{i}\bvB{i}$ and $\bvz[d]{i+1} = \inv{\bvB{i}} \bvz{i+1}$, and $\bvB{i}$ is the $i$-th iteration's blurring matrix (this being based on a Gaussian blur, or any other averaging kernel, that decreases in radius at each iteration). In this scenario, the solution $\bvz{i+1}$ is
+where $\bvR[d]{i} = \bvR{i}\bvB{i}$ and $\bvs[d]{i+1} = \inv{\bvB{i}} \bvs{i+1}$, and $\bvB{i}$ is the $i$-th iteration's blurring matrix (this being based on a Gaussian blur, or any other averaging kernel, that decreases in radius at each iteration). In this scenario, the solution $\bvs{i+1}$ is
 \begin{equation}
-	\bvG{i} = \bvB{i} \inv*{\tr{\bvB{i}} \tr{\bvJ{i}} \bvJ{i} \bvB{i} + \alpha^2 \tr{\bvD}\bvD} \tr{\bvB{i}} \bvJ[T]{i}
+	\bvG{i} = \bvB{i} \inv*{\tr{\bvB{i}} \tr{\bvR{i}} \bvR{i} \bvB{i} + \alpha^2 \tr{\bvD}\bvD} \tr{\bvB{i}} \bvR[T]{i}
 \end{equation}
 
-To achieve this, the regularization function has to be adapted, such that $P_{\alpha}(\bvz{i+1}) = \alpha^2 \norm{\bvD \inv{\bvB{i}} \bvz{i+1}}^2$; this means the regularization is applied on the ``reverse blurred'' signal. As stated, the blurring matrix $\bvB{i}$ depends on the iterator $i$. Usually, the blur radius is decreased for increasing $i$, aiming at gradually finding a more refined and accurate (less blurry) solution.
+To achieve this, the regularization function has to be adapted, such that $P_{\alpha}(\bvs{i+1}) = \alpha^2 \norm{\bvD \inv{\bvB{i}} \bvs{i+1}}^2$; this means the regularization is applied on the ``reverse blurred'' signal. As stated, the blurring matrix $\bvB{i}$ depends on the iterator $i$. Usually, the blur radius is decreased for increasing $i$, aiming at gradually finding a more refined and accurate (less blurry) solution.
 
 This convolutional averaging (also called ray broadening \cite{meyerholtz_convolutional_1989,phillips_traveltime_1991}) can help find solutions by scattering the rays and expanding the paths taken to neighboring cells, thus dealing with the problem of some cells not being traversed by any rays.
 
 In \cite{ali_opensource_2019} a similar blurring framework is proposed, but this blur is applied directly to the gradient, such that
 \begin{equation}
-	\nabla E(\bvz{i+1}) = 2 \bvB{k} \bvJ[T]{i}\pts{\bvJ{i} \bvz{i+1} - \bvt{\obs}} + 2 \alpha^2 \tr{\bvD}\bvD \bvz{i+1}
+	\nabla E(\bvs{i+1}) = 2 \bvB{k} \bvR[T]{i}\pts{\bvR{i} \bvs{i+1} - \bvt{\obs}} + 2 \alpha^2 \tr{\bvD}\bvD \bvs{i+1}
 \end{equation}
-Since in the cited paper the solution $\bvz{i+1}$ is found via the conjugate gradient (iterative) method, and not by inversion, the blurring matrix is variable within the conjugate gradient iterative search for the inverse (with iterator $k$), rathen than the Eikonal solving iterative process (iterator $i$). {\proposed Assuming invertibility, the solution can be directly achieved through
+Since in the cited paper the solution $\bvs{i+1}$ is found via the conjugate gradient (iterative) method, and not by inversion, the blurring matrix is variable within the conjugate gradient iterative search for the inverse (with iterator $k$), rathen than the Eikonal solving iterative process (iterator $i$). {\proposed Assuming invertibility, the solution can be directly achieved through
 	\begin{equation}
-		\bvG{i} = \inv*{\bvB{i} \bvJ[T]{i} \bvJ{i} + \tr{\bvD}\bvD}\bvB{i} \bvJ[T]{i}
+		\bvG{i} = \inv*{\bvB{i} \bvR[T]{i} \bvR{i} + \tr{\bvD}\bvD}\bvB{i} \bvR[T]{i}
 	\end{equation}
 	situation in which the blurring can be lessened on each iteration of $i$, or even kept constant.}
 
