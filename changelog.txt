@@ -6,3 +6,5 @@ v1.0.251009
 	Changes in notation and text
 v1.0.251215
 	Many changes to text.
+v1.0.260210
+	Many changes.

@@ -3,8 +3,12 @@
 
 \let\mrm\symup
 \def\mtimes{\mathbin{\scalebox{0.7}{$\times$}}}
-\NewDocumentCommand{\opt}{m}{%
-	{#1}^{\star}%
+\NewDocumentCommand{\opt}{s m}{%
+	\IfBooleanTF{#1}{
+		{#2}^{\star}%
+	}{
+		#2^{\star}%
+	}	
 }
 \NewDocumentCommand{\sz}{s m m}{%
 	\IfBooleanTF{#1}{%

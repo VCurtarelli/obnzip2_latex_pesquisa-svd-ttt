@@ -1,13 +1,11 @@
 {
-\def\sympath{h386f}
-\input{figures/data/\sympath/params.tex}
 	\begin{figure}[!t]
 	\centering
 	\begin{minipage}{0.6\linewidth}
 		\centering
 		\begin{tikzpicture}
-			\begin{heatmap}{\ncols}[colorbar to name={velocityHeatmap}][fill opacity=0.5]
-				\addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=0.5, draw opacity=0] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/field_observed.csv};
+			\begin{heatmap}{\ncols}[newhm,colorbar to name={velocityHeatmap}][fill opacity=0.5]
+				\addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=0.5, draw opacity=0] table[x=x, y=y, z=val, col sep=comma] {figures/data/h71e8/field_observed.csv};
 				
 				
 				\draw[thin, dash pattern = {on 4pt off 1pt}] (axis cs:\pgfkeysvalueof{/pgfplots/xmin},500) -- (axis cs:\pgfkeysvalueof{/pgfplots/xmax},500);

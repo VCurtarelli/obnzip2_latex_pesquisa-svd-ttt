@@ -6,7 +6,7 @@
     \centering
         \begin{tikzpicture}
             \begin{heatmap}{\ncols}[colorbar to name = {dump1}]
-                \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1, draw opacity=0.5] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_proposed_comp.csv};
+                \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_proposed_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
         \caption{Proposed, perimeter}
@@ -15,7 +15,7 @@
     \centering
         \begin{tikzpicture}
             \begin{heatmap}{\ncols}[colorbar to name = {dump2}]
-                \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1, draw opacity=0.5] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_literature_comp.csv};
+                \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_literature_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
         \caption{Literature, perimeter}
@@ -26,7 +26,7 @@
     \centering
         \begin{tikzpicture}
             \begin{heatmap}{\ncols}[colorbar to name = {dump3}]
-                \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1, draw opacity=0.5] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_proposed_comp.csv};
+                \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_proposed_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
         \caption{Proposed, horizontal}
@@ -35,7 +35,7 @@
     \centering
         \begin{tikzpicture}
             \begin{heatmap}{\ncols}[colorbar to name = {dump4}]
-                \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1, draw opacity=0.5] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_literature_comp.csv};
+                \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_literature_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
         \caption{Literature, horizontal}

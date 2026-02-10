@@ -95,15 +95,15 @@
 			point meta max=\ymax,
 			#3
 		},
-		width=0.9\linewidth,
-		height=0.9\linewidth,
+		width=\linewidth,
+		height=\linewidth,
 		point meta min=\ymin,
 		point meta max=\ymax,
 		mesh/cols=#1,
-		xlabel style = {anchor=north, yshift=0.9\linewidth-1.5em},
+		xlabel style = {anchor=north, yshift=\linewidth-1.5em},
 		view={0}{90},
 		grid style = {draw=none},
-		ylabel style={anchor=center, yshift=-0.9\linewidth+1.5em},
+		ylabel style={anchor=center, yshift=-\linewidth+1.5em},
 		ytick={0, 500, ..., 2500},
 		yticklabels={0, 0.5, ..., 2.5},
 		xtick={0, 1000, 2000, 3000},
@@ -123,6 +123,15 @@
 	}{
 	\end{axis}
 }
+\pgfplotsset{newhm/.style={
+	xtick={0, 500, ..., 2000},
+	xticklabels={0, 0.5, ..., 2},
+	ytick={0, 500, ..., 2000},
+	yticklabels={0, 0.5, ..., 2},
+	xmin=0, xmax=2000,
+	ymin=0, ymax=2000,
+	}
+}
 %END_FOLD
 
 \newlength{\wdtwenty}
@@ -135,7 +144,7 @@
 }
 
 %BEGIN_FOLD
-\NewDocumentEnvironment{lineplot}{O{axis} m m O{}}{ % xlabel | ylabel | other arguments
+\NewDocumentEnvironment{lineplot}{O{axis} m m O{} O{}}{ % xlabel | ylabel | other arguments
 	\begin{#1}[
 		width=0.9\linewidth,
 		height=0.7\linewidth,
@@ -164,7 +173,8 @@
 			%			at={(1.05, 0.5)},
 			%			anchor=west,
 			legend columns=2,
-			/tikz/every even column/.append style={column sep=1em}
+			/tikz/every even column/.append style={column sep=1em},
+			#5
 		},
 		xmin=0.5, xmax=50.5,
 		yticklabel pos=right,

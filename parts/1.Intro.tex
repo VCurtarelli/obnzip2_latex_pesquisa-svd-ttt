@@ -1,14 +1,10 @@
 \section{Sound Speed Field Estimation}
 
+\textit{\small This section is a condensed form of the previous literature review, presenting the fundamentals of SSF and of the TTT technique. For more details, see the literature review.}
+
 Although the speed of sound $c$ in water is considered constant at around $1500 \si{\meter}/\si{\second}$, it can vary when considering environments of both small and large scales, respectively in small and large proportions \cite{kieffer_sound_1977,trusler_determination_2017,li_sound_2015,pinson_sound_2010}. Many properties can affect the speed of sound in water, such as pressure, temperature, salinity, and water currents \cite{wilson_speed_1959,medwin_fundamentals_1998,mcdougall_getting_2011,delgrosso_new_1974}. As these properties vary over the body of water, so does the velocity, creating a sound speed field (SSF) in the body of water. Although the term sound speed profile \cite{li_acoustic_2019,li_sound_2015,pinson_sound_2010} (SSP) is also commonly used, it usually refers to the $1D$ scenario of estimation.
 
 Initial works in the topic of estimating the velocity field in water aimed at estimating these key properties, as well as the relationship between them and the velocity of water. Works such as \cite{wilson_speed_1959,medwin_fundamentals_1998,mcdougall_getting_2011,delgrosso_new_1974,chen_speed_1977,wong_speed_1995,roquet_accurate_2015} operated under this framework, with some still being used today to model the behavior of water currents on a global scale.
-
-In \cite{wilson_speed_1959}, their experiments showed that (in distilled water) $c$ has a strictly positive relationship with pressure, and a parabolic correlation with temperature. That is, an increase in pressure directly corresponds to an increase in $c$, and similarly with temperature up to a certain point, after which increases in temperature either don't affect $c$, or even cause a decrease in velocity. In \cite{medwin_fundamentals_1998}, empirical models for the $c$ are provided, also taking salinity into account in their formulation.
-
-The TEOS-10 model \cite{mcdougall_getting_2011} is another method for estimating the velocity field given the temperature, pressure, and salinity parameters in the body of water, solving chemical-thermodynamics equations to find the adequate velocity distribution.
-
-The pursuit of knowing the speed of sound at each point of a body of water -- the SSF -- allows the knowledge of the properties of a wave that travels through this medium. By Snell's law, a change in speed of a wave also changes its direction, therefore a wave that travels through a sufficiently large body of water will be also affected within it, resulting in curves, refractions, reflections, and formation/dissolution of beams.
 
 By knowing the SSF, we can know the path a unidirectional wave would course. By treating an omnidirectional wave as a cluster of unidirectional waves, we can calculate the travel-time between the source and any point within the medium, as well as its wavefront's profile.
 
@@ -16,27 +12,4 @@ Most modern SSF estimation approaches avoid estimating these properties, and tre
 
 Most techniques utilize sound sources and receptors within the body of water, and by comparing the properties of the waves that are produced and received, estimate the path of the waves; and from this, the SSF of the water body.
 
-\subsection{Methods for SSF inversion}
-
 Many different methods can be used for estimating the SSF, using different information acquired by sensors along the body of water. These data can be the travel-time between source and receptors, the measured sound pressure, difference in phase and amplitude between the devices, or even the temperature-salinity-pressure used in the previously cited methods. Along with this, the techniques can use these measurements through either direct SSF estimation methods, as well as via machine learning.
-
-\subsubsection{Travel-time tomography}
-
-Travel-time tomography (TTT) \cite{bormann_seismic_2012,stefanov_travel_2019} is one of the simplest methods for SSF estimation. It uses the difference in arrival time of the acoustics signals at the sensors, requiring a spatial distribution of sources and receiver(s) for sufficient spatial resolution.
-
-In general, the SSF is discretized in layers or cells, where each behaves as having a constant sound speed. Then, the wavepath's length in each layer is calculated, resulting in a system of equations that is used to estimate the velocity in each layer. It can also work with assumed functions for the SSF, ditching the layering assumption, but increasing the problem's complexity.
-
-Its simpleness, robustness and computational efficiency are its main advantages, the later allowing real-time implementation. However, it depends on a precise positioning and syncing of the devices, and its discretization assumption results in limited resolution.
-
-\subsubsection{Matched field processing and inversion}
-In matched field processing (MFP) \cite{gemba_adaptive_2017} and matched field inversion (MFI) \cite{dosso_bayesian_2011}, the measured pressure data in the receivers is compared to acoustic pressure models for different SSFs, matching and adapting the models to the data through optimization algorithms in order to find the most similar one.
-
-These techniques are similar to beamforming, which are used in many fields such as acoustics and signal processing \cite{schmidt_environmentally_1990,brienzo_broadband_1993}, where both use spatial correlation between the receivers and their measurements, and model the acoustic field through them.
-
-MFP and MFI also employ modal decomposition of the signals, with each mode behaving differently in water. They incorporate more complex information regarding the signals, such as amplitude and phase, depending not only in travel time. Among their advantages, we have a better use of obtained data, enhanced spatial resolution -- compared to TTT -- and improved robustness to noise due to coherent processing. However, it requires spatial-temporal information on the source and receivers, such as directivity and spectral behavior. It also isn't very suitable for very large bodies, given that a larger body would result in an exponentially more complex acoustic pressure model; and is more computationally complex, as well as susceptible to local minima.
-
-\subsubsection{Full waveform inversion}
-
-Full waveform inversion (FWI) techniques \cite{virieux_overview_2009,fichtner_multiscale_2013} aim the waveform reconstruction of the signals present in the SSF, considering many different behaviors that are neglected by the aforementioned techniques. Here, the error between the estimated and measured waveforms is minimized, being implemented in either time- or frequency-domains.
-
-Given this, the FWI technique is among the ones that maximally use the receivers' available data, and resulting in the most faithful SSF, as well as maximally using the available signals. However, due to considering complex signal interactions and multiple wavepaths, there is a significant increase in the mathematical and computational complexity. This, coupled with the non-linearity of the problem, results in a very intense and sometimes unfeasible technique, that also requires a decent initial parameter estimation for its robustness and convergence.

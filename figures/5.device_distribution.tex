@@ -1,0 +1,84 @@
+\begin{figure*}[!h]
+	\centering
+	\begin{subfigure}{0.5\linewidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{heatmap}{\ncols}[newhm,colorbar to name = {5dump1},ylabel={\phantom{Depth}}]
+				\addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=0.8, draw opacity=0.0] table[x=x, y=y, z=val, col sep=comma] {figures/data/h71e8/field_observed.csv};
+				%
+				{
+					\addplot[only marks, mark=o, gray, line width=1.5pt, mark size=0.25em+0.2pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h71e8/pos_receivers.csv};
+					\addplot[only marks, mark=o, yellow!90!black, thick, mark size=0.25em+0.2pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h71e8/pos_receivers.csv};
+				}
+				%
+				{
+					\addplot[only marks, mark=x, white, line width=1.4pt, mark size=0.25em+0.4pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h71e8/pos_sources.csv};
+					\addplot[only marks, mark=x, red!50!black, thick, mark size=0.25em] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h71e8/pos_sources.csv};
+				}
+			\end{heatmap}
+		\end{tikzpicture}
+		\caption{Case 1}
+	\end{subfigure}\hspace*{-1em}
+	\begin{subfigure}{0.5\linewidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{heatmap}{\ncols}[newhm,colorbar to name = {5dump1},yticklabels={\phantom{0.5}}]
+				\addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=0.8, draw opacity=0.0] table[x=x, y=y, z=val, col sep=comma] {figures/data/h13ba4/field_observed.csv};
+				%
+				{
+					\addplot[only marks, mark=o, gray, line width=1.5pt, mark size=0.25em+0.2pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h13ba4/pos_receivers.csv};
+					\addplot[only marks, mark=o, yellow!90!black, thick, mark size=0.25em+0.2pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h13ba4/pos_receivers.csv};
+				}
+				%
+				{
+					\addplot[only marks, mark=x, white, line width=1.4pt, mark size=0.25em+0.4pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h13ba4/pos_sources.csv};
+					\addplot[only marks, mark=x, red!50!black, thick, mark size=0.25em] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h13ba4/pos_sources.csv};
+				}
+			\end{heatmap}
+		\end{tikzpicture}
+		\caption{Case 2}
+	\end{subfigure}\\[0.5em]
+	\begin{subfigure}{0.5\linewidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{heatmap}{\ncols}[newhm,colorbar to name = {5dump1},ylabel={\phantom{Depth}}]
+				\addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=0.8, draw opacity=0.0] table[x=x, y=y, z=val, col sep=comma] {figures/data/h165c6/field_observed.csv};
+				%
+				{
+					\addplot[only marks, mark=o, gray, line width=1.5pt, mark size=0.25em+0.2pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h165c6/pos_receivers.csv};
+					\addplot[only marks, mark=o, yellow!90!black, thick, mark size=0.25em+0.2pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h165c6/pos_receivers.csv};
+				}
+				%
+				{
+					\addplot[only marks, mark=x, white, line width=1.4pt, mark size=0.25em+0.4pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h165c6/pos_sources.csv};
+					\addplot[only marks, mark=x, red!50!black, thick, mark size=0.25em] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h165c6/pos_sources.csv};
+				}
+			\end{heatmap}
+		\end{tikzpicture}
+		\caption{Case 3}
+	\end{subfigure}\hspace*{-1em}
+	\begin{subfigure}{0.5\linewidth}
+		\centering
+		\begin{tikzpicture}
+			\begin{heatmap}{\ncols}[newhm,colorbar to name = {5dump1},yticklabels={\phantom{0.5}}]
+				\addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=0.8, draw opacity=0.0] table[x=x, y=y, z=val, col sep=comma] {figures/data/h158a8/field_observed.csv};
+				%
+				{
+					\addplot[only marks, mark=o, gray, line width=1.5pt, mark size=0.25em+0.2pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h158a8/pos_receivers.csv};
+					\addplot[only marks, mark=o, yellow!90!black, thick, mark size=0.25em+0.2pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h158a8/pos_receivers.csv};
+				}
+				%
+				{
+					\addplot[only marks, mark=x, white, line width=1.4pt, mark size=0.25em+0.4pt] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h158a8/pos_sources.csv};
+					\addplot[only marks, mark=x, red!50!black, thick, mark size=0.25em] table [x=x_pos, y=y_pos, col sep=comma] {figures/data/h158a8/pos_sources.csv};
+				}
+			\end{heatmap}
+		\end{tikzpicture}
+		\caption{Case 4}
+	\end{subfigure}\\[0.5em]
+	
+	\vspace*{.5em}
+	\ref{5dump1}
+	\caption{Discretized sound speed field with device positions: sources (red $\times$) and receivers (yellow $\bigcirc$); for all four configurations of receivers.}
+	\label{fig:sec5:devices_distributions_all_cases}
+\end{figure*}

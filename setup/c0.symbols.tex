@@ -88,6 +88,17 @@
         }
     }
 }
+
+\DeclareDocumentCommand{\calbv}{m O{n} g}{
+	\@my{#2}{\mathbfcal{#1}}\IfValueT{#3}{_{#3}}
+}
+\DeclareDocumentCommand{\newcalbv}{o m}{
+		\IfValueTF{#1}{
+			\@namedef{cal#1}{\calbv{#2}}
+		}{
+			\@namedef{cal#2}{\calbv{#2}}
+		}
+}
 \@namedef{:}{\scalebox{1.01}{\textbf{:}}}
 \makeatother
 % END_FOLD
@@ -119,7 +130,8 @@
 \newbv{c}
 
 \def\Id{\bv{I}}
-\def\calI{\mathbfcal{I}}
+\newcalbv{I}
+%\def\calI{\mathbfcal{I}}
 
 
 % \def\bvL{*************}
