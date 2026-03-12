@@ -2,7 +2,7 @@
 	\centering
 	\begin{minipage}{0.6\linewidth}
 		\begin{tikzpicture}
-			\begin{heatmap}{\ncols}[colorbar to name={velocityHeatmap}][fill opacity=0.8]
+			\begin{heatmap}{\ncols}[colorbar to name={velocityHeatmap},hmstyle][fill opacity=0.8]
 				\addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=0.8, draw opacity=0.0] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/field_observed.csv};
 				%
 				{
@@ -18,7 +18,7 @@
 				}
 			\end{heatmap}
 		\end{tikzpicture}
-		\ref{velocityHeatmap}
+		\colorbar{velocityHeatmap}
 	\end{minipage}
     \caption{Discretized sound speed field with device positions: (a) perimeter (red $\times$) and (b) horizontal (yellow $\bigcirc$) distributions.}
     \label{fig:sec4:discretized_ssf_true}

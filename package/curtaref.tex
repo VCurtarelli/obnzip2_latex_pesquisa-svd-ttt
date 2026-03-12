@@ -1,0 +1,3 @@
+\NewDocumentCommand{\papersec}{m}{\stepcounter{subsubsection} \noindent\textit{\Alph{subsubsection}.\hspace*{0pt-\widthof{\Alph{subsubsection}}} \hspace{1em} #1} }
+\DeclareDocumentCommand{\citeay}{s m}{{\IfBooleanT{#1}{\bfseries}\citeauthor{#2} - \citeyear{#2}}}
+\NewDocumentCommand{\citem}{s m}{\item[\IfBooleanT{#1}{\bfseries}\cite{#2}]}

@@ -1,11 +1,21 @@
-\documentclass{article} 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Modelo em LaTeX para relatório de atividades para o projeto OBNZip II
+%
+% Autor: Vitor G. P. Curtarelli
+%
+% Data: 10/03/2026
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\input{setup/a1.setup.tex}
+\documentclass{setup/obnzip2}
 
-\addbibresource{references.bib}
-\addbibresource{setup/d1.ext_references.bib}
-
-\usepackage{tikz}
+\usepackage[math,bold,env,plot]{package/curtatex}
+\usepackage{siunitx}
+\usepackage{letltxmacro}
+\usepackage{float}
+\usepackage{subcaption}
+\usepackage{nicefrac}
 \usetikzlibrary{decorations.markings}
 \usetikzlibrary{decorations.pathmorphing}
 \usetikzlibrary{shapes.geometric}
@@ -33,36 +43,54 @@
 }
 \tikzstyle{snake it}=[decorate,decoration={snake, #1,}]
 \usetikzlibrary{angles,quotes,calc,positioning} % Load the calc library
-\usepackage{cancel}
-%\bibliography{references.bib}
-\DeclareDocumentCommand{\quote}{m}{%
-	``#1''%
+
+\usepgfplotslibrary{external}
+\tikzexternalize[prefix=./figures/pgfexternal/]
+\NewDocumentCommand{\colorbar}{m}{%
+	\tikzexternaldisable \ref{#1} \tikzexternalenable%
 }
-\def\proposed{%
-%	\color{green!30!black}%
+\pgfplotsset{
+	hmstyle/.style={
+		ytick={0, 500, ..., 2500},
+		yticklabels={0, 0.5, ..., 2.5},
+		xtick={0, 1000, 2000, 3000},
+		xticklabels={0, 1, 2, 3},
+		xmin=0, xmax=3000,
+		ymin=0, ymax=2500,
+		xlabel={Offset ($\si{\kilo\meter}$)},
+		ylabel={Depth ($\si{\kilo\meter}$)},
+	}
 }
+\pgfplotsset{newhm/.style={
+		xtick={0, 500, ..., 2000},
+		xticklabels={0, 0.5, ..., 2},
+		ytick={0, 500, ..., 2000},
+		yticklabels={0, 0.5, ..., 2},
+		xmin=0, xmax=2000,
+		ymin=0, ymax=2000,
+	}
+}
+
+\DeclareMathOperator{\rmse}{rmse}
+\DeclareMathOperator{\true}{true}
+\DeclareMathOperator{\est}{est}
+\DeclareMathOperator{\ssf}{ssf}
+\DeclareMathOperator{\munk}{munk}
+\let\Id\bvI
+\DeclareDocumentCommand{\quote}{m}{``#1''}
+\let\proposed\relax
+\newcalbv{I}
+\let\nfrac\nicefrac
+\addbibresource{setup/RelatorioReferencias.bib}
+\addbibresource{setup/RelatorioExtReferencias.bib}
+
 \begin{document}
-% \setcounter{footnote}{-1}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\input{parts/0.Info.tex}
-\input{parts/1.Intro.tex}
-\input{parts/2.TTT.tex}
-\input{parts/3.SVD_proposed.tex}
-\input{parts/4.Sims.tex}
-%\setcounter{section}{5}
-\input{parts/5.SituationAwareMinim.tex}
-%\input{parts/4.Weighted_minim.tex}
-%\input{parts/2.1D_NonVertical.tex}
-%\input{parts/3.1D_Vertical.tex}
-%
-%\printbibliography
-%\appendix\newpage
-%\crefalias{section}{appendix}
-%\crefname{appendix}{Appendix}{Appendices}
-%
-%\input{parts/A.ssb_inverse.tex}
-%\input{parts/B.Derivative_Jb_bu.tex}
+	\input{parts/1.Intro}
+	\input{parts/2.TTT}
+	\input{parts/3.SVD_proposed}
+	\input{parts/4.Sims}
+	\input{parts/5.SituationAwareMinim}
+%	\input{parts/2.ReviewTTT}
+	\printbibliography[]	
 \end{document}
 

@@ -1,0 +1,64 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{curtatex}[2026/03/10 curtatex]
+
+\RequirePackage{ifluatex}
+\RequirePackage{ifpdf}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\RequirePackage{pgfplots}
+
+\ifluatex
+	\RequirePackage{fontspec}
+	\RequirePackage{anyfontsize}
+	\RequirePackage{amsmath, amsfonts, amsthm}
+	\let\amvec\vec
+	\RequirePackage{unicode-math}
+	\let\umvec\vec
+\else
+\ifpdf
+	\RequirePackage[utf8]{inputenc}
+	\RequirePackage{fontenc}
+	\RequirePackage{anyfontsize}
+	\RequirePackage{amsmath, amsfonts, amsthm}
+	\RequirePackage{upgreek}
+	\NewDocumentCommand{\symbfup}{m}{%
+		\boldsymbol{\mathrm{#1}}%
+	}
+	\NewDocumentCommand{\symbf}{m}{%
+		\boldsymbol{#1}%
+	}
+	\NewDocumentCommand{\symbfsfup}{m}{%
+		{\bfseries\sffamily #1}%
+	}
+	\NewDocumentCommand{\symsfup}{m}{%
+		{\textsf{#1}}%
+	}
+	\NewDocumentCommand{\symbb}{m}{%
+		\mathbb{#1}%
+	}
+	\NewDocumentCommand{\symup}{m}{%
+		\text{#1}%
+	}
+\fi
+\fi
+\RequirePackage{xparse}
+
+%%%%%
+% Basic commands
+\let\ABD\AtBeginDocument
+\ProvideDocumentCommand{\IfEmpty}{m m G{}}{\ifthenelse{\equal{#1}{}}{#2}{#3}}%
+\ProvideDocumentCommand{\ifdef}{m m m}{\ifdefined #1
+#2
+\else
+#3
+\fi
+}
+
+
+\DeclareOption{math}{\input{package/curtamath}}
+\DeclareOption{bold}{\input{package/curtabold}}
+\DeclareOption{env}{\input{package/curtaenv}}
+\DeclareOption{plot}{\input{package/curtaplot}}
+\DeclareOption{ref}{\input{package/curtaref}}
+\ProcessOptions\relax
+

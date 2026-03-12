@@ -5,7 +5,7 @@
     \begin{subfigure}{0.45\linewidth}
     \centering
         \begin{tikzpicture}
-            \begin{heatmap}{\ncols}[colorbar to name = {dump1}]
+            \begin{heatmap}{\ncols}[colorbar to name = {dump1},hmstyle]
                 \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_proposed_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
@@ -14,7 +14,7 @@
     \begin{subfigure}{0.45\linewidth}
     \centering
         \begin{tikzpicture}
-            \begin{heatmap}{\ncols}[colorbar to name = {dump2}]
+            \begin{heatmap}{\ncols}[colorbar to name = {dump2},hmstyle]
                 \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_literature_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
@@ -25,7 +25,7 @@
     \begin{subfigure}{0.45\linewidth}
     \centering
         \begin{tikzpicture}
-            \begin{heatmap}{\ncols}[colorbar to name = {dump3}]
+            \begin{heatmap}{\ncols}[colorbar to name = {dump3},hmstyle]
                 \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_proposed_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
@@ -34,7 +34,7 @@
     \begin{subfigure}{0.45\linewidth}
     \centering
         \begin{tikzpicture}
-            \begin{heatmap}{\ncols}[colorbar to name = {dump4}]
+            \begin{heatmap}{\ncols}[colorbar to name = {dump4},hmstyle]
                 \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_literature_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
@@ -42,7 +42,7 @@
     \end{subfigure} \\[0.5em]
     
     \vspace*{.5em}
-    \ref{dump1}
+    \colorbar{dump1}
     \caption{Absolute SSF estimation error, for the $50$-th iteration.}
     \label{fig:sec4:estimated_ssfs}
 \end{figure*}

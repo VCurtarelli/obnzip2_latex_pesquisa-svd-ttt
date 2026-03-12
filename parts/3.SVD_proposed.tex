@@ -205,7 +205,7 @@ where $w_i > 0$ is the weight for the $i$-th measurement. Returning to the matri
 \begin{equation}
 	\bvs{i+1} = \arg \min_{\bvs} \norm{\bvW \pts{\bvR{i} \bvs - \bvt{\obs}}}^2
 \end{equation}
-where $\bvW$ is a diagonal matrix, such that the $\el{\bvW}[i,i] = \Sqrt{w_i}$. Using the SVD and pseudo-inverse approach as established, the solution to this minimization is
+where $\bvW$ is a diagonal matrix, such that the $\el{\bvW}[i,i] = \sqrt{w_i}$. Using the SVD and pseudo-inverse approach as established, the solution to this minimization is
 \begin{equation}
 	\bvG{i} = \pinv*{\bvW \bvR{i}} \bvW
 	\label{eq:sec3:Gi_weighted_minim}

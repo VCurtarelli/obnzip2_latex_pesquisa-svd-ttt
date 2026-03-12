@@ -1,0 +1,166 @@
+% My accents
+\makeatletter
+\NewDocumentCommand{\@my}{m m}{
+	\@nameuse{@my#1}{#2}
+}
+\NewDocumentCommand{\@myh}{m}{%
+	\hat{#1}%
+}
+\NewDocumentCommand{\@myt}{m}{%
+	\tilde{#1}%
+}
+\NewDocumentCommand{\@myb}{m}{%
+	\bar{#1}%
+}
+\NewDocumentCommand{\@myd}{m}{%
+	\dot{#1}%
+}
+\NewDocumentCommand{\@myv}{m}{%
+	\overrightarrow{#1}%
+}
+\providecommand{\tr}[1]{#1^T\setboldmathwarning}
+\providecommand{\he}[1]{#1^H\setboldmathwarning}
+\NewDocumentCommand{\@myT}{m}{%
+	\tr{#1}%
+}
+\NewDocumentCommand{\@myH}{m}{%
+	\he{#1}%
+}
+\NewDocumentCommand{\@myn}{m}{#1}
+\makeatother
+
+% My bold
+\makeatletter
+\DeclareDocumentCommand{\bv}{m O{n} g}{
+	\@my{#2}{\symbfup{#1}}\IfValueT{#3}{_{#3}}
+}
+\DeclareDocumentCommand{\BV}{m g}{
+	\symbfsfup{#1}\IfValueT{#2}{_{#2}}
+}
+\DeclareDocumentCommand{\newbv}{s o m}{
+	\IfBooleanTF{#1}{
+		\IfValueTF{#2}{
+			\@namedef{bv#2}{\BV{#3}}
+		}{
+			\@namedef{bv#3}{\BV{#3}}
+		}
+	}{
+		\IfValueTF{#2}{
+			\@namedef{bv#2}{\bv{#3}}
+		}{
+			\@namedef{bv#3}{\bv{#3}}
+		}
+	}
+}
+\NewDocumentCommand{\mathbfcal}{m}{\boldsymbol{\mathcal{#1}}}
+\DeclareDocumentCommand{\calbv}{m O{n} g}{
+	\@my{#2}{\mathbfcal{#1}}\IfValueT{#3}{_{#3}}
+}
+\DeclareDocumentCommand{\newcalbv}{o m}{
+	\IfValueTF{#1}{
+		\@namedef{cal#1}{\calbv{#2}}
+	}{
+		\@namedef{cal#2}{\calbv{#2}}
+	}
+}
+
+\newbv{a}
+\newbv{b}
+\newbv{c}
+\newbv{d}
+\newbv{e}
+\newbv{f}
+\newbv{g}
+\newbv{h}
+\newbv{i}
+\newbv{j}
+\newbv{k}
+\newbv{l}
+\newbv{m}
+\newbv{n}
+\newbv{o}
+\newbv{p}
+\newbv{q}
+\newbv{r}
+\newbv{s}
+\newbv{t}
+\newbv{u}
+\newbv{v}
+\newbv{w}
+\newbv{x}
+\newbv{y}
+\newbv{z}
+\newbv{A}
+\newbv{B}
+\newbv{C}
+\newbv{D}
+\newbv{E}
+\newbv{F}
+\newbv{G}
+\newbv{H}
+\newbv{I}
+\newbv{J}
+\newbv{K}
+\newbv{L}
+\newbv{M}
+\newbv{N}
+\newbv{O}
+\newbv{P}
+\newbv{Q}
+\newbv{R}
+\newbv{S}
+\newbv{T}
+\newbv{U}
+\newbv{V}
+\newbv{W}
+\newbv{X}
+\newbv{Y}
+\newbv{Z}
+\newbv[alpha]{\upalpha}
+\newbv[beta]{\upbeta}
+\newbv[ga]{\upgamma}
+\newbv[de]{\updelta}
+\newbv[ep]{\upepsilon}
+\newbv[ze]{\upzeta}
+\newbv[eta]{\upeta}
+\newbv[th]{\uptheta}
+\newbv[io]{\upiota}
+\newbv[ka]{\upkappa}
+\newbv[la]{\uplambda}
+\newbv[mu]{\upmu}
+\newbv[nu]{\upnu}
+\newbv[xi]{\upxi}
+\newbv[pi]{\uppi}
+\newbv[rho]{\uprho}
+\newbv[si]{\upsigma}
+\newbv[tau]{\uptau}
+\newbv[up]{\upupsilon}
+\newbv[phi]{\upphi}
+\newbv[chi]{\upchi}
+\newbv[psi]{\uppsi}
+\newbv[om]{\upomega}
+\newbv[varep]{\upvarepsilon}
+\newbv[varth]{\upvartheta}
+\newbv[varpi]{\upvarpi}
+\newbv[varrho]{\uprho}
+\newbv[varsi]{\upsigma}
+\newbv[varphi]{\upvarphi}
+
+\newbv[Ga]{\Upgamma}
+\newbv[De]{\Updelta}
+\newbv[Th]{\Uptheta}
+\newbv[La]{\Uplambda}
+\newbv[Xi]{\Upxi}
+\newbv[Pi]{\Uppi}
+\newbv[Si]{\Upsigma}
+\newbv[Up]{\Upupsilon}
+\newbv[Phi]{\Upphi}
+\newbv[Psi]{\Uppsi}
+\newbv[Om]{\Upomega}
+\makeatother
+
+\def\boldmathwarning{}
+\def\setboldmathwarning{\gdef\boldmathwarning{\PackageWarningNoLine{CurtaTex}{CurtaTex package with "bold" option is best along with "math" option}}}
+\AtEndDocument{
+\boldmathwarning{}
+}
