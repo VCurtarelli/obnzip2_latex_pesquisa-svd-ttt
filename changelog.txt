@@ -10,3 +10,4 @@ v1.0.260210
 	Many changes.
 v1.1.260312
 	Changed to new OBNZip II template.
+	File cleanup.
