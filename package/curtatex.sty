@@ -6,6 +6,8 @@
 \RequirePackage{graphicx}
 \RequirePackage{tikz}
 \RequirePackage{pgfplots}
+\RequirePackage{nicefrac}
+\usepgfplotslibrary{external}
 
 \ifluatex
 	\RequirePackage{fontspec}
@@ -61,4 +63,6 @@
 \DeclareOption{plot}{\input{package/curtaplot}}
 \DeclareOption{ref}{\input{package/curtaref}}
 \ProcessOptions\relax
+\DeclareDocumentCommand{\quote}{m}{``#1''}
+\let\nfrac\nicefrac
 

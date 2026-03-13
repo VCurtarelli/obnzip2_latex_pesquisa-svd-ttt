@@ -15,86 +15,18 @@
 \usepackage{letltxmacro}
 \usepackage{float}
 \usepackage{subcaption}
-\usepackage{nicefrac}
-\usetikzlibrary{decorations.markings}
-\usetikzlibrary{decorations.pathmorphing}
-\usetikzlibrary{shapes.geometric}
-\tikzset{->-/.style={
-		decoration={
-			markings,
-			mark={at position .5 with {\pgftransformscale{2}\arrow{>}}}
-		},
-		postaction={decorate}
-	}
-}
-\tikzset{
-	square/.style={
-		regular polygon,
-		regular polygon sides=4,
-		minimum size=0.5cm,
-		draw
-	},
-	triangle/.style={
-		regular polygon,
-		regular polygon sides=3,
-		minimum size=0.5cm,scale=0.7,
-		draw
-	}
-}
-\tikzstyle{snake it}=[decorate,decoration={snake, #1,}]
-\usetikzlibrary{angles,quotes,calc,positioning} % Load the calc library
-
-\usepgfplotslibrary{external}
-\tikzexternalize[prefix=./figures/pgfexternal/]
-\NewDocumentCommand{\colorbar}{m}{%
-	\tikzexternaldisable \ref{#1} \tikzexternalenable%
-}
-\pgfplotsset{
-	hmstyle/.style={
-		ytick={0, 500, ..., 2500},
-		yticklabels={0, 0.5, ..., 2.5},
-		xtick={0, 1000, 2000, 3000},
-		xticklabels={0, 1, 2, 3},
-		xmin=0, xmax=3000,
-		ymin=0, ymax=2500,
-		xlabel={Deslocamento ($\si{\kilo\meter}$)},
-		ylabel={Profundidade ($\si{\kilo\meter}$)},
-	}
-}
-\pgfplotsset{newhm/.style={
-		xtick={0, 500, ..., 2000},
-		xticklabels={0, 0.5, ..., 2},
-		ytick={0, 500, ..., 2000},
-		yticklabels={0, 0.5, ..., 2},
-		xmin=0, xmax=2000,
-		ymin=0, ymax=2000,
-	}
-}
-\pgfplotsset{compat=1.18}
-
-\DeclareMathOperator{\rmse}{RMSE}
-\DeclareMathOperator{\true}{true}
-\DeclareMathOperator{\est}{est}
-\DeclareMathOperator{\ssf}{ssf}
-\DeclareMathOperator{\munk}{munk}
-\let\Id\bvI
-\DeclareDocumentCommand{\quote}{m}{``#1''}
-\let\proposed\relax
+\input{setup/comm_tikz}
+\input{setup/comm_symbols}
+%\let\proposed\relax
 \newcalbv{I}
-\let\nfrac\nicefrac
 \addbibresource{setup/RelatorioReferencias.bib}
 \addbibresource{setup/RelatorioExtReferencias.bib}
 
 \begin{document}
-	\vspace*{1em}
-	Sugere-se, como leitura prévia, \href{https://www.overleaf.com/read/zygwvhqkzyqm#58fac7}{a revisão bibliográfica de \textit{Travel-Time Tomography}}.
-	
-%	\input{parts/1.Intro}
 	\input{parts/1.TTT}
 	\input{parts/2.SVD_proposed}
 	\input{parts/3.Sims}
 	\input{parts/4.SituationAwareMinim}
-%	\input{parts/2.ReviewTTT}
 	\printbibliography[]	
 \end{document}
 

@@ -46,6 +46,9 @@
 }
 \DeclareMathOperator{\obs}{obs}
 
+% Misc commands
+\let\nfrac\nicefrac
+
 % My delimiters
 \newcommand{\pts}[1]{\udel{#1}}
 \newcommand{\bts}[1]{\udel[{[}]{#1}[{]}]}
@@ -145,3 +148,5 @@
 		}        
 	}
 }
+
+\ProvideDocumentCommand{\Id}{}{\textrm{\textbf{I}}\setboldmathwarning}

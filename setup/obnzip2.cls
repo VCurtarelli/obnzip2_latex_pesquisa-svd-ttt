@@ -42,7 +42,8 @@ sortcites=true]{biblatex}
 \RequirePackage{fancyhdr}
 \RequirePackage{csquotes}
 \RequirePackage{lipsum}
-
+\RequirePackage{ragged2e}
+\RequirePackage{expl3}
 %%%%%
 %
 % Comandos-base
@@ -72,7 +73,7 @@ sortcites=true]{biblatex}
 \def\@data{\today}
 \def\@entregavel{}
 \def\@entregavelcodigo{}
-
+\def\@comentario{}
 \newcounter{autores}
 \newcounter{revisores}
 \NewDocumentCommand{\addautor}{m}{\stepcounter{autores}}
@@ -88,31 +89,35 @@ sortcites=true]{biblatex}
 \DeclareDocumentCommand{\resumo}{m}{\def\@resumo{#1}}
 \DeclareDocumentCommand{\data}{m}{\def\@data{#1}}
 \DeclareDocumentCommand{\entregavel}{m m}{\def\@entregavelcodigo{#1}\def\@entregavel{#2}}
+\DeclareDocumentCommand{\comentario}{m}{\def\@comentario{#1}}
 
 \DeclareDocumentCommand{\formarcabecalho}{}{
 	\thispagestyle{firstpage}
 	\IfEmpty{\@titulo}{\errmessage{Título vazio}}
 	\IfEmpty{\@autor}{\errmessage{Autor vazio}}
 	\IfEmpty{\@entregavel}{\errmessage{Atividade do projeto vazia}}
-	\begin{minipage}{0.9\linewidth}
-		\centering{
-			% {\bfseries\small \@projeto} \\[0.5cm]
-			{\bfseries\huge \@titulo}
-			\IfEmpty{\@subtitulo}{\\[0.5cm]}{\\[0.25cm]{\bfseries\large \@subtitulo} \\[0.5cm]}
-		}
-		{
-		\begin{itemize}[itemsep=0pt,
-			leftmargin=\widthof{Entregável}+2ex]
-			\small
-			\itemcabecalho{Autor\ifthenelse{\value{autores}>1}{es}{}}{\@autor}
-			\itemcabecalho{Revisor\ifthenelse{\value{revisores}>1}{es}{}}{\@revisor}
-			\itemcabecalho{Data}{\@data}
-			\itemcabecalho{Entregável}{\@entregavelcodigo~- \@entregavel}
-			\itemcabecalho{Resumo}{\@resumo}
-		\end{itemize}
-		}
-	\hrule
-	\end{minipage}
+	\begin{center}
+		\begin{minipage}{0.9\linewidth}
+			\centering{
+				% {\bfseries\small \@projeto} \\[0.5cm]
+				{\bfseries\huge \@titulo}
+				\IfEmpty{\@subtitulo}{\\[0.5cm]}{\\[0.25cm]{\bfseries\large \@subtitulo} \\[0.5cm]}
+			}
+			{
+				\begin{itemize}[itemsep=0pt,
+					leftmargin=\widthof{Entregável}+2ex]
+					\small
+					\itemcabecalho{Autor\ifthenelse{\value{autores}>1}{es}{}}{\@autor}
+					\itemcabecalho{Revisor\ifthenelse{\value{revisores}>1}{es}{}}{\@revisor}
+					\itemcabecalho{Data}{\@data}
+					\itemcabecalho{Entregável}{\@entregavelcodigo~- \@entregavel}
+					\itemcabecalho{Resumo}{\@resumo}
+				\end{itemize}
+			}
+			\hrule
+			\IfEmpty{\@comentario}{}{\vspace*{1em}\noindent\justifying\@comentario}
+		\end{minipage}
+	\end{center}
 }
 
 \input{setup/0.RelatorioInfo}
@@ -174,8 +179,8 @@ sortcites=true]{biblatex}
 
 \let\@lw\@ClassWarningNoLine
 \NewDocumentCommand{\@AvisoTemplate}{m m G{#2}}{%
-    \protected@edef\AvisoTemplateComando{\csname #3\endcsname}
-    \IfEqual{\csname @#2\endcsname}{\csname @template#2\endcsname}{\@lw{obnzip2.cls}{Campo "#1" do cabeçalho não editado. Altere o argumento do comando \AvisoTemplateComando no arquivo "setup/0.RelatorioInfo.tex"}}
+	\protected@edef\AvisoTemplateComando{\csname #3\endcsname}
+	\IfEqual{\csname @#2\endcsname}{\csname @template#2\endcsname}{\@lw{obnzip2.cls}{Campo "#1" do cabeçalho não editado. Altere o argumento do comando \AvisoTemplateComando no arquivo "setup/0.RelatorioInfo.tex"}}
 }
 
 \def\@templatetitulo{Modelo em \LaTeX~para relatório de atividade}
@@ -183,11 +188,12 @@ sortcites=true]{biblatex}
 \def\@templatesubtitulo{Para manter padrões no projeto}
 \def\@templateautor{}
 \def\@templaterevisor{}
+\@updatecommand{\@templateautor}{Vitor Curtarelli, Ciclano Silva}
+\@updatecommand{\@templaterevisor}{Beltrano Souza}
 \def\@templateentregavelcodigo{0.1.1}
 \def\@templateentregavel{Padronização dos relatórios do projeto}
 \def\@templateresumo{Esse documento é um modelo a ser usado nos relatórios de atividades dentro do projeto OBNZip II, bem como para outros documentos em geral.}    
-\@updatecommand{\@templateautor}{Vitor Curtarelli, Ciclano Silva}
-\@updatecommand{\@templaterevisor}{Beltrano Souza}
+\def\@templatecomentario{Atente-se a todos os comandos presentes nesse template.}
 
 
 \@AvisoTemplate{Título}{titulo}
@@ -198,6 +204,7 @@ sortcites=true]{biblatex}
 \@AvisoTemplate{Código do entregável}{entregavelcodigo}{entregavel}
 \@AvisoTemplate{Descrição do entregável}{entregavel}
 \@AvisoTemplate{Resumo}{resumo}
+\@AvisoTemplate{Comentário}{comentario}
 
 %%%%%
 %
