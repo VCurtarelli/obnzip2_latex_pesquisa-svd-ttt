@@ -1,0 +1,89 @@
+\section{Simulação e resultados usando SVD}
+\label{sec:simulation_and_results}
+\def\sympath{h386f}
+\input{figures/data/h386f/params.tex}
+
+Para comparar na prática as técnicas desenvolvidas ao longo do trabalho, foram criados ambientes simulados nos quais essas técnicas serão aplicadas. Especificamente, compararemos a técnica padrão da literatura da \cref{eqs:sec2:iterative_minimization_Ezi} com o método proposto obtido na \cref{eq:sec2:definition_zi+1_with_mu} com truncamento. Nesta seção, apresentamos o ambiente e as condições práticas assumidas, detalhamos as considerações adotadas para as técnicas apresentadas, bem como outros parâmetros, métodos e métricas necessários; e, por fim, apresentamos os resultados e suas respectivas discussões.
+
+\subsection{Matriz de regularização}
+
+Como discutido, a escolha da matriz de regularização controla qual métrica será adicionada ao objetivo primário de estimação do SSF. Escolhemos uma abordagem baseada no Laplaciano discreto, que melhora a suavidade do resultado. Assumimos que $\bvs$ é construído pela vetorização de uma matriz $\bvS \in \re^{\sz{N_{\z}}{N_{\x}}}$, onde cada entrada representa a lentidão da célula correspondente. Mais precisamente, a relação entre os elementos de $\bvs$ e de $\bvS$ é
+\begin{equation}
+	\el{\bv{S}}[j,k] = \el{\bvs}[N_{\x}j+k],
+\end{equation}
+com $0 \leq j < N_{\z}$ e $0 \leq k < N_{\x}$. Com isso, $\bvD$ para essa regularização baseada no Laplaciano discreto pode ser escrita em forma de blocos
+\begin{equation}
+	\bvD = \begin{bmatrix}
+		\bvQ' & \Id{N_{\x}} & \bv0  & \cdots & \bv0\\
+		\Id{N_{\x}} & \bvQ & \Id{N_{\x}} & \cdots & \bv0\\
+		\bv0 & \Id{N_{\x}} & \bvQ & \cdots & \bv0\\
+		\vdots & \vdots & \vdots & \ddots & \vdots \\
+		\bv0 & \bv0 & \bv0 & \cdots & \bvQ'
+	\end{bmatrix}
+\end{equation}
+onde $\bvQ,\bvQ' \in \re^{\sz{N_{\x}}{N_{\x}}}$ são matrizes de bloco dadas por
+\begin{subgather}
+	\bvQ' = \begin{bmatrix}
+		-2 & 1 & 0 & \cdots & 0 & 0 \\
+		1 & -3 & 1 & \cdots & 0 & 0 \\
+		0 & 1 & -3 & \cdots & 0 & 0 \\
+		\vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+		0 & 0 & 0 & \cdots & -3 & 1 \\
+		0 & 0 & 0 & \cdots & 1  & -2
+	\end{bmatrix} \\
+	\bvQ = \bvQ' - \Id{N_{\x}}
+\end{subgather}
+
+Alternativamente, $\bvD$ pode ser definida como tendo valores iguais a um nas suas primeiras diagonais super-, sub-, $N_{\x}$-ésima super- e $N_{\x}$-ésima sub-diagonais; e sua diagonal principal é tal que a soma de qualquer linha (ou coluna) seja $0$. Isso garante que células na fronteira -- células com três ou menos vizinhos -- não sejam super-representadas no Laplaciano discreto.
+
+\subsection{Métricas e avaliação}
+
+A primeira métrica reflete o erro de tempo de trânsito entre os SSFs verdadeiro e estimado. Denotamos $\rmse_{t}(\bvs)$ como o erro quadrático médio de tempo de trânsito (RMS error ou RMSE) entre os tempos de percurso verdadeiro e estimado, dado por
+\begin{equations}
+	\rmse_{t}(\bvs)
+	& = \frac{1}{M}\sqrt{E(\bvs)} \\
+	& = \frac{1}{M}\sqrt{\norm{\bvR{\est} \bvs{\est} - \bvt{\true}}^2}
+	\label{eq:sec3:rmse_t}
+\end{equations}
+
+Isso nos permite comparar os modelos estimados com o resultado observado por meio da métrica objetiva que está sendo otimizada.
+
+Também utilizaremos o erro RMS entre o campo de velocidade verdadeiro $\bvc{\true}$ e o estimado $\bvc = \nfrac{1}{\bvs}$,
+\begin{equation}
+	\rmse_{\ssf}(\bvs) = \frac{1}{M} \norm{\bvc{\true} - \bvc{\est}}
+	\label{eq:sec3:rmse_ssf}
+\end{equation}
+%
+\input{figures/4.discretized_ssf_with_profiles.tex}
+
+\subsection{Condições do ambiente}
+
+Assumimos que o ambiente é discretizado em células 2D ao longo da profundidade (eixo $\z$) e do deslocamento horizontal (eixo $\x$), com $N = N_{\x} \cdot N_{\z}$. Para as simulações, adotamos $N_{\x} = 10$ e $N_{\z} = 30$.
+
+Também consideramos que o campo de velocidade do som é modelado como
+\begin{equation}
+	c(x,z) = c_{\munk}(z) + \Delta c_{\x}(x)
+\end{equation}
+onde $c(x,z)$ é apresentado na \cref{fig:sec4:discretized_ssf_true}, $c_{\munk}(z)$ é construído com base no perfil de Munk \cite{munk_sound_1974}, e $\Delta c_{\x}(x)$ é uma pequena variação ao longo do eixo $\x$, com $\Delta$ apenas simbolizando uma variação. A \Cref{fig:sec4:discretized_ssf_true} também mostra as posições escolhidas para os $16$ dispositivos (aqui assumidos que operam tanto como fontes quanto como receptores) para as duas distribuições consideradas: (a) com dispositivos em duas camadas ao longo da superfície e do fundo do oceano (marcados com $\times$ vermelhos); e (b) com dispositivos ao longo do perímetro do ambiente (marcados com $\bigcirc$ amarelos). Com isso, medições de tempo de trânsito foram realizadas entre cada par de dispositivos, totalizando $120$ raios/observações.
+
+Embora a variável de modelo $\bvs$ represente a vagarosidade sonora no ambiente, as figuras e discussões serão feitas em termos da velocidade do som. Dada a relação inversa entre essas grandezas, essa escolha não implica perda de informação, apenas auxilia na visualização e apresentação.
+
+Dado o número de raios (\#receptores $\times$ \#fontes) e células, esse cenário encontra-se sob a condição de sobre-modelagem espacial, conforme \cref{subsec:spatial_under-over-_modeling}, com todas as simulações e análises realizadas sob essa perspectiva.
+
+O pacote Python \texttt{EikonalFM} \cite{ganster_eikonalfm_2025} foi utilizado, que implementa o FMM \cite{sethian_fast_1999,chopp_improvements_2001} para resolver os tempos de primeira chegada ao longo dos pontos da grade. Isso está alinhado com a abordagem padrão adotada na literatura para estimar $\bvR{i}$ em cada iteração, dado o campo de lentidão $\bvs{i}$.
+
+Dois métodos serão comparados: o baseado em formulações conhecidas, chamado abordagem da literatura, conforme descrito na \cref{eqs:sec2:iterative_minimization_Ezi}; e o baseado nas derivações novas apresentadas, denominado método proposto, conforme definido pela \cref{eq:sec2:definition_zi+1_with_mu}. Para a técnica proposta, apenas os primeiros $K=30$ valores singulares foram mantidos, com os $90$ restantes sendo zerados. Para a abordagem da literatura, $\alpha = 2$, e as matrizes $\bvR$ e $\bvD$ foram normalizadas (dado que as entradas de $\bvR$ são aproximadamente $100\times$ maiores que as entradas de $\bvD$).
+
+\input{figures/4.tt_ssf_rms_errors}
+
+\input{figures/4.estimated_ssfs}
+
+\subsection{Resultados e discussão}
+
+Os resultados de erro (\cref{eq:sec3:rmse_ssf,eq:sec3:rmse_t}) para as métricas escolhidas são apresentados na \cref{fig:sec4:tt_ssf_rms_errors}, para ambas as técnicas e cenários. Em termos de tempo de trânsito, todos os cenários alcançam erros inferiores a $20\si{\micro\second}$. Entretanto, o contraste no erro de estimativa do SSF entre os dois cenários é evidente: enquanto o uso de dispositivos ao redor do perímetro resulta em erros inferiores a $2\si{\meter/\second}$, dispositivos em duas camadas (superfície + fundo) levam a erros muito maiores, em torno de $5.5\si{\meter/\second}$.
+
+Embora o cenário horizontal tenha apresentado menores erros de $\rmse_{t}$ (sendo essa a métrica do objetivo primário em TTT, minimizar os erros de tempo de trânsito), seu desempenho na aproximação do campo de velocidade do som --- o objetivo implícito da técnica --- foi inferior; indicando um sobreajuste à métrica explícita. Isso está ligado à falta de variabilidade na direção de propagação: como a maioria dos raios se propaga em direções semelhantes, sem cruzar ou atravessar repetidamente as células, o problema mal-posto degenera em vários problemas menores quase idênticos. Essa independência entre os sub-problemas simultaneamente reduz o erro de tempo de trânsito e aumenta o erro de estimativa do SSF.
+
+Para expandir os resultados apresentados em \cref{fig:sec4:tt_ssf_rms_errors:subfig2}, na \cref{fig:sec4:estimated_ssfs} apresentamos a diferença absoluta entre os SSFs verdadeiro (\cref{fig:sec4:discretized_ssf_true}) e estimado (para cada método e distribuição de dispositivos), após $50$ iterações. Esses resultados estão alinhados com a discussão anterior: enquanto nas situações com dispositivos no perímetro o erro está mais distribuído, comportando-se quase como um ruído aleatório suavizado; no caso das duas camadas de dispositivos (horizontal), o erro fica fortemente concentrado em duas regiões.
+
+Esses resultados mostram que tanto a abordagem tradicional da literatura quanto a abordagem proposta baseada em SVD apresentam resultados muito semelhantes. Outras simulações (não apresentadas aqui) reforçam essa conclusão: com uma escolha adequada de parâmetros para ambas as técnicas, os resultados diferem apenas marginalmente.

@@ -1,0 +1,21 @@
+\section{Modelo-padrão de TTT}
+\label{sec:standard_ttt_approach}
+
+Vamos assumir que o ambiente a ser modelado está dividido em uma grade com $N$ células ao todo, e que um total de $M$ raios é produzido entre fontes e receptores. Denotamos por $\bvs \in \re^{\sz{N}{1}}$ o vetor positivo que representa a lentidão em cada célula, e por $\bvr{m}(\bvs) \in \re^{\sz{N}{1}}$ o vetor contendo o comprimento percorrido em cada célula pelo $m$-ésimo raio. O tempo de trânsito para o $m$-ésimo raio é $t_m$, sendo dado por
+\begin{equation}
+	t_m(\bvs) = \tr{\bvr{m}}(\bvs) \bvs
+\end{equation}
+
+Agora definimos $\bvt(\bvs) \in \re^{\sz{M}{1}}$ como o vetor de tempos de trânsito para o modelo atual, considerando todos os $M$ raios; e $\bvR(\bvs) \in \re^{\sz{M}{N}}$ como uma matriz na qual a $m$-ésima linha é $\bvr[T]{m}(\bvs)$. Com isso, nosso problema de minimização passa a ser minimizar o erro $E(\bvs)$, que pode ser expresso como
+\begin{equation}
+	\opt{\bvs} = \arg\min_{\bvs} E(\bvs) = \norm{\bvR(\bvs) \bvs - \bvt{\obs}}^2
+	\label{eq:sec2:def_minimization_bvz}
+\end{equation}
+onde $\bvt{\obs}$ é vetor de tempos de trânsito observados para cada raio.
+
+Este problema é mal-posto e não linear, exigindo condições adicionais para garantir uma solução única. Para isso, tradicionalmente empregam-se uma busca iterativa e regularização,
+\begin{equation}
+	\bvs{i+1} = \arg\min_{\bvs{i+1}} E(\bvs{i+1}) = \norm{\bvR{i} \bvs{i+1} - \bvt{\obs}}^2 + \alpha^2 \norm{\bvD \bvs{i+1}}^2
+	\label{eqs:sec2:iterative_minimization_Ezi}
+\end{equation}
+com $\alpha$ sendo um parâmetro de controle. Para que esta etapa de inversão seja possível, é suficiente que $\bvD$ seja uma matriz de posto completo. A matriz de regularização $\bvD$ pode ser escolhida para melhorar uma variedade de métricas: escolher $\bvD = \Id$ faz com que a minimização também considere o erro RMS; enquanto tomar $\bvD z \approx \nabla^2 s(x,y)$ aproxima o Laplaciano do campo de lentidão, resultando em uma solução mais suave.

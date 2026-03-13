@@ -4,7 +4,7 @@
 	\begin{minipage}{0.6\linewidth}
 		\centering
 		\begin{tikzpicture}
-			\begin{heatmap}{\ncols}[newhm,colorbar to name={velocityHeatmap}][fill opacity=0.5]
+			\begin{heatmap}{\ncols}[newhm,colorbar=false][fill opacity=0.5]
 				\addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=0.5, draw opacity=0] table[x=x, y=y, z=val, col sep=comma] {figures/data/h71e8/field_observed.csv};
 				
 				
@@ -12,9 +12,9 @@
 				
 				\draw[thin, dash pattern = {on 4pt off 1pt}] (axis cs:\pgfkeysvalueof{/pgfplots/xmin},1000) -- (axis cs:\pgfkeysvalueof{/pgfplots/xmax},1000);
 				
-				\addplot[forget plot] coordinates {(2850, 150)} node {A};
-				\addplot[forget plot] coordinates {(2850, 650)} node {B};
-				\addplot[forget plot] coordinates {(2850, 1150)} node {C};
+				\addplot[forget plot] coordinates {(1850, 150)} node {A};
+				\addplot[forget plot] coordinates {(1850, 650)} node {B};
+				\addplot[forget plot] coordinates {(1850, 1150)} node {C};
 				%
 %				{
 %					\def\sympath{h298e}
@@ -31,7 +31,7 @@
 		\end{tikzpicture}
 		\colorbar{velocityHeatmap}
 	\end{minipage}
-	\caption{Layered model, with layers A, B, and C.}
+	\caption{Modelo em camadas, com camadas A, B, e C.}
 	\label{fig:sec5:layered_model}
 \end{figure}
 }

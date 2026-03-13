@@ -3,7 +3,7 @@
     \begin{subfigure}[t]{0.45\linewidth}
         \centering
             \begin{tikzpicture}
-                \begin{lineplot}{Iterations}{$\rmse_{t}$ ($\si{\milli\second}$)}[legend to name=lineplots, xmin=0.5, xmax=50.5, ymode=log, ytick={0.001, 0.01, 0.1, 1}, ymin=0.001, ymax=1,  ]
+                \begin{lineplot}{Iterações}{$\rmse_{t}$ ($\si{\milli\second}$)}[legend to name=lineplots, xmin=0.5, xmax=50.5, ymode=log, ytick={0.001, 0.01, 0.1, 1}, ymin=0.001, ymax=1,  ]
                     {
                     \def\sympath{h386f}
                     \addplot[draw, resA] table[x=x,y=y, col sep=comma] {figures/data/\sympath/metric_time_proposed.csv}; 
@@ -16,20 +16,19 @@
                     }
 
                     % \addplot[draw, resA]
-                    \addlegendentry{Proposed - Perimeter};
-                    \addlegendentry{Literature - Perimeter};
-                    \addlegendentry{Proposed - Horizontal};
-                    \addlegendentry{Literature - Horizontal};
+                    \addlegendentry{Proposto - Perímetro};
+                    \addlegendentry{Literatura - Perímetro};
+                    \addlegendentry{Proposto - Horizontal};
+                    \addlegendentry{Literatura - Horizontal};
                 \end{lineplot}
             \end{tikzpicture}
-        %			\ref*{velocityHeatmap}
         \caption{}
         \label{fig:sec4:tt_ssf_rms_errors:subfig1}
     \end{subfigure} \hspace*{2em}
     \begin{subfigure}[t]{0.45\linewidth}
         \centering
             \begin{tikzpicture}
-                \begin{lineplot}{Iterations}{$\rmse_{\ssf}$ ($\si{\meter/\second}$)}
+                \begin{lineplot}{Iterações}{$\rmse_{\ssf}$ ($\si{\meter/\second}$)}
                     {
                     \def\sympath{h386f}
                     \addplot[draw, resA] table[x=x,y=y, col sep=comma] {figures/data/\sympath/metric_ssf_proposed.csv}; 
@@ -48,6 +47,6 @@
 
     \vspace*{.5em}
     \colorbar{lineplots}
-    \caption{SSF estimation error, for proposed and literature techniques, and horizontal and perimeter scenarios, over 50 iterations.}
+    \caption{Erro de estimação do SSF, para técnicas proposta e da literatura, em cenários de dispositivos na horizontal e no perímetro; ao longo de 50 iterações.}
     \label{fig:sec4:tt_ssf_rms_errors}
 \end{figure}

@@ -23,7 +23,7 @@
 \RequirePackage[brazilian]{babel}  % Loads Portuguese settings (dates, titles)
 \RequirePackage{amsmath, amsfonts, amsthm}
 \RequirePackage{geometry}
-\RequirePackage[colorlinks,linkcolor=black,citecolor=black,urlcolor=black]{hyperref}
+\RequirePackage[colorlinks,linkcolor=black,citecolor=black]{hyperref}
 \RequirePackage[nameinlink,brazilian,capitalize,]{cleveref}
 \RequirePackage{xparse}
 \RequirePackage[

@@ -9,40 +9,40 @@
                 \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_proposed_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
-        \caption{Proposed, perimeter}
+        \caption{Proposto - Perímetro}
     \end{subfigure}
     \begin{subfigure}{0.45\linewidth}
     \centering
         \begin{tikzpicture}
-            \begin{heatmap}{\ncols}[colorbar to name = {dump2},hmstyle]
+            \begin{heatmap}{\ncols}[colorbar=false,hmstyle]
                 \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_literature_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
-        \caption{Literature, perimeter}
+        \caption{Literatura - Perímetro}
     \end{subfigure} \\[0.5em]
     %
     \def\sympath{h298e}
     \begin{subfigure}{0.45\linewidth}
     \centering
         \begin{tikzpicture}
-            \begin{heatmap}{\ncols}[colorbar to name = {dump3},hmstyle]
+            \begin{heatmap}{\ncols}[colorbar=false,hmstyle]
                 \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_proposed_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
-        \caption{Proposed, horizontal}
+        \caption{Proposto - Horizontal}
     \end{subfigure}
     \begin{subfigure}{0.45\linewidth}
     \centering
         \begin{tikzpicture}
-            \begin{heatmap}{\ncols}[colorbar to name = {dump4},hmstyle]
+            \begin{heatmap}{\ncols}[colorbar=false,hmstyle]
                 \addplot3[surf, mesh/cols={\ncols}, mesh/rows={\nrows}, opacity=1] table[x=x, y=y, z=val, col sep=comma] {figures/data/\sympath/it50_field_literature_comp.csv};
             \end{heatmap}
         \end{tikzpicture}
-        \caption{Literature, horizontal}
+        \caption{Literatura - Horizontal}
     \end{subfigure} \\[0.5em]
     
     \vspace*{.5em}
     \colorbar{dump1}
-    \caption{Absolute SSF estimation error, for the $50$-th iteration.}
+    \caption{Erro absoluto de estimação do SSF, para a $50$ª iteração.}
     \label{fig:sec4:estimated_ssfs}
 \end{figure*}

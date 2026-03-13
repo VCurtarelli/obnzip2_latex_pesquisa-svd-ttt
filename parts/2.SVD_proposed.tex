@@ -1,0 +1,275 @@
+\section{Pseudo-inversão por SVD}
+
+Dado o passo de inversão necessário no problema mal-posto de TTT, uma possibilidade para lidar com esse obstáculo --- como brevemente comentado na revisão da literatura --- é o uso de uma pseudo-inversão baseada em decomposição por valores singulares (SVD) \cite{berrar_practical_2003}, para situações em que $\bvR{i}$ é deficiente em posto.
+
+Dada $\bvR{i}$, podemos escrevê-la por meio de sua decomposição em valores singulares, como
+\begin{equation}
+	\bvR{i} = \bvU \bvSi \bvV[T]
+\end{equation}
+em que $\bvU \in \re^{\sz{M}{M}}$ e $\bvV \in \re^{\sz{N}{N}}$ são os vetores singulares à esquerda e à direita de $\bvR{i}$, formando bases ortonormais; e $\bvSi \in \re^{\sz{M}{N}}$ é uma matriz diagonal não quadrada, cujas entradas diagonais $\lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_N$ são os valores singulares (estritamente não-negativos) de $\bvR{i}$, em ordem decrescente. Por definição, $\bvU$, $\bvSi$ e $\bvV$ dependem do iterador $i$, mas essa relação é omitida por clareza de notação.
+
+\subsection{Pseudo-inversa via SVD}
+
+Assumindo que $\rank{\bvR{i}} = R < N$, então $\lambda_{R+1} = \cdots = \lambda_{N} = 0$, com somente $R$ valores singulares não-nulos. Nesse cenário, $\pinv{[\bvR[T]{i} \bvR{i}]}$ --- onde $\pinv*{\cdot}$ denota a pseudo-inversa --- pode ser obtida como
+\begin{equation}
+	\begin{split}
+		\pinv*{\bvR[T]{i} \bvR{i}}
+		& = \pinv*{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T]} \\
+		& = \pinv*{\bvV \bvSi[T] \bvSi \bvV[T]} \\
+		& = \bvV \pinv*{\bvSi[T] \bvSi} \bvV[T] \\
+		& = \bvV \pinv{\bvSi} \pinv{{\bvSi[T]}} \bvV[T]
+	\end{split}
+\end{equation}
+onde foram utilizadas a ortogonalidade de $\bvV$ e a propriedade distributiva da pseudo-inversa (considerando a ortogonalidade de $\bvV$ e das colunas de $\bvSi$); e $\pinv{\bvSi} \in\re^{\sz{N}{M}}$ é a pseudo-inversa de $\bvSi$, obtida diretamente como a transposta de $\bvSi$ com as entradas diagonais não nulas reciprocadas. Com essa pseudo-inversão de $\pinv{\bvSi}$, e portanto de $\bvR[T]{i} \bvR{i}$, a solução para o problema de minimização é
+\begin{equation}
+	\begin{split}
+		\bvG{i}
+		& = \pinv*{\bvR[T]{i} \bvR{i}} \bvR[T]{i} \\
+		& = \bvV \pinv{\bvSi} \pinv{{\bvSi[T]}} \bvV[T] \bvV \bvSi[T] \bvU[T] \\
+		& = \bvV \pinv{\bvSi} \bvU[T]
+	\end{split}
+	\label{eq:sec2:solution-G_pseudo-inverse}
+\end{equation}
+onde, pela definição da pseudo-inversa, $\pinv{\bvSi} \pinv{{\bvSi[T]}} \bvSi[T] = \pinv{\bvSi}$. Por propriedades da pseudo-inversa, também temos que
+\begin{equation}
+	\bvG{i} = \pinv{\bvR{i}}
+	\label{eq:sec2:solution-G_pseudo-inverse_shortform}
+\end{equation}
+Ambas essas formulações são estritamente equivalentes e, salvo quando algebricamente necessário, será utilizada a forma $\pinv{\bvR{i}}$.
+
+\subsection{Função-custo e gradiente com SVD}
+
+Com a \cref{eq:sec2:solution-G_pseudo-inverse_shortform}, a solução do problema inverso é $\bvs{i+1} = \pinv{\bvR{i}} \bvt{\obs}$; e disso, o gradiente é
+\begin{equation}
+	\begin{split}
+		\nabla E(\bvs{i+1})
+		& = 2\pts{\bvR[T]{i} \bvR{i} \pinv{\bvR{i}} \bvt{\obs} - \bvR[T]{i} \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T] \bvV \pinv{\bvSi} \bvU[T] \bvt{\obs} - \bvV \bvSi[T] \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bvSi \pinv{\bvSi} \bvU[T] \bvt{\obs} - \bvV \bvSi[T] \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bts{\Id{M;R} - \Id{M}} \bvU[T] \bvt{\obs}}
+	\end{split}
+\end{equation}
+onde $\Id{M;R} \in \re^{\sz{M}{M}}$ é uma matriz diagonal cujas primeiras $R$ entradas são $1$, e as $M-R$ restantes são $0$; e $\Id{M} \in \re^{\sz{M}{M}}$ é a matriz identidade. A partir disso, $\Id{M;R} - \Id{M}$ possui suas primeiras $R$ entradas diagonais iguais a $0$, e as últimas iguais a $-1$. Como todas as linhas de $\bvSi[T]$ pertencem ao espaço-nulo de $\Id{M;R} - \Id{M}$ (apenas as primeiras $R$ entradas de qualquer linha de $\bvSi[T]$ são não-nulas, exatamente onde $\Id{M;R} - \Id{M}$ é zero), então $\bvSi[T]\bts{\Id{M;R} - \Id{M}} = \bv0$. Portanto,
+\begin{equation}
+	\begin{split}
+		\nabla E(\pinv{\bvR{i}} \bvt{\obs})
+		& = 2\pts{\bvV \,\bv0\, \bvU[T] \bvt{\obs}} \\
+		& = \bv0
+	\end{split}
+\end{equation}
+
+Essa verificação garante que $\bvs{i+1} = \pinv{\bvR{i}} \bvt{\obs}$ é uma solução para o processo de minimização de \cref{eqs:sec2:iterative_minimization_Ezi}.
+
+Denotamos $\bvU{k}$ como as primeiras $k$ colunas de $\bvU$, $\bvU{-k}$ como as últimas $k$ colunas de $\bvU$, e $\bvU{(j\sim k)}$ como as colunas de $j$ até $k$ (inclusive) de $\bvU$. Utilizando essa notação, a função-custo residual para a solução com a \cref{eq:sec2:solution-G_pseudo-inverse_shortform} pode ser obtida explicitamente, sendo dada por
+\begin{equation}
+	E(\bvs{i+1}) = \bvt[T]{\obs} \bvU{-R} \bvU[T]{-R} \bvt{\obs}
+	\label{eq:sec2:cost_func_explicit_svd}
+\end{equation}
+
+\subsection{Usando o espaço-nulo}
+\label{subsec:sec3:null-space_exploitation}
+
+Podemos expandir a solução $\bvs{i+1} = \pinv{\bvR{i}} \bvt{\obs}$ explorando o espaço-nulo de $\bvR{i}$. Escrevemos
+\begin{equation}
+	\bvV = \left[\begin{array}{c|c}
+		\!\bvV{1} & \bvV{2}\!
+	\end{array}\right]
+\end{equation}
+onde $\bvV{1}\in \re^{\sz{N}{R}}$ são as primeiras $R$ colunas de $\bvV$, $\bvV{2} \in \re^{\sz{N}{(N-R)}}$ são as $N-R$ colunas restantes de $\bvV$; $[~\cdot~|~\cdot~]$ denota concatenação de matrizes. Note que $\bvV{2}$ está associada às últimas $N-R$ linhas nulas de $\bvSi$, que são estritamente $0$; isso implica que as colunas de $\bvV{2}$ formam uma base ortonormal para o $\nul{\bvR{i}}$.
+
+Dado um vetor de coordenadas $\bvmu \in \re^{\sz{(N-R)}{1}}$, qualquer $\bvs[b] = \bvV{2} \bvmu$ estará dentro do espaço-nulo de $\bvSi$, e portanto $\bvR \bvs[b] = \bvU \bvSi \bvV[T] \bvV{2} \bvmu$ será, por definição, $\bv0$ (pela ortogonalidade de $\bvV$, e pelas colunas nulas de $\bvSi$). Isso significa que, para $\bvs{i+1} \equiv \bvs{i+1}(\bvmu) = \pinv{\bvR{i}} \bvt{\obs} + \bvV{2} \bvmu$, temos
+\begin{subgather}{eq:sec3:mu_doesnt_affect_cost-or-gradient}
+		E(\pinv{\bvR{i}} \bvt{\obs} + \bvV{2} \bvmu) = E(\pinv{\bvR{i}} \bvt{\obs}) \\
+		\nabla E(\pinv{\bvR{i}} \bvt{\obs} + \bvV{2} \bvmu) = \bv0
+\end{subgather}
+
+Com isso, podemos escolher qualquer $\bvmu$, e tanto a função-custo $E(\bvs{i})$ quanto seu gradiente permanecerão inalterados.
+
+\subsection{Minimização de métrica secundária}
+\label{subsec:sec2:minim_secundaria}
+
+Dada alguma outra métrica, essa informação sobre a irrelevância de $\bvmu$ para a função-custo original pode ser explorada para encontrar uma solução ótima dentro dessa métrica secundária, mantendo intactos os resultados da \cref{eq:sec3:mu_doesnt_affect_cost-or-gradient}. Por exemplo, podemos definir uma nova função-custo $F(\bvmu)$, dada por
+\begin{equation}
+	F(\bvmu) = \norm{\bvD \pts{\pinv{\bvR{i}} \bvt{\obs} + \bvV{2}\bvmu}}^2
+	\label{eq:sec3:cost_function_mu}
+\end{equation}
+onde $\bvD$ é uma matriz que governa essa métrica secundária (de forma semelhante a como governava o termo de regularização). Por exemplo, tomamos $\bvD$ como a aproximação discreta previamente determinada para o Laplaciano, com o objetivo de melhorar a suavidade. Dado que a ortogonalidade das colunas de $\bvV{2}$ implica $\rank{\bvV{2}} = N-R$ (o que significa que $\bvV{2}$ é de posto completo), e assumindo que $\bvD$ também é uma matriz de posto completo, uma solução para esse problema pode ser encontrada diretamente, da forma
+\begin{equation}
+	\bvmu = -\inv*{\bvV[T]{2} \bvD[T] \bvD\bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvR{i}} \bvt{\obs}
+\end{equation}
+
+Por propriedades da pseudo-inversa, isso pode ser escrito como
+\begin{equation}
+	\bvmu = -\pinv*{\bvD \bvV{2}} \bvD \pinv{\bvR{i}} \bvt{\obs}
+	\label{eq:sec2:definition_mu_full}
+\end{equation}
+Com isso, a solução completa para ambos os problemas de minimização é dada por
+\begin{equation}
+	\begin{split}
+		\bvs{i+1}
+		& = \pinv{\bvR{i}} \bvt{\obs} - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD \pinv{\bvR{i}} \bvt{\obs} \\
+		& = \pts{\Id{N} - \bvV{2} \pinv*{\bvD \bvV{2}} \bvD} \pinv{\bvR{i}} \bvt{\obs}
+	\end{split}
+	\label{eq:sec2:definition_zi+1_with_mu}
+\end{equation}
+
+Essa solução possui gradiente nulo na função-custo primária e minimiza a função-custo secundária dentro do espaço de soluções de erro mínimo da função primária. A principal ideia por trás dessa expansão com $\bvmu$ é que, ao explorar o espaço-nulo de $\bvR$, minimizamos o objetivo primário no espaço-linha e o segundo objetivo no espaço-nulo. Note que esse procedimento só funciona se $\rank{\bvR{i}} = R < N$. Se $R = N$, não há espaço-nulo a ser explorado e a segunda minimização não pode ser realizada.
+
+Outra observação importante nesse cenário é que $\bvV{2} \pinv*{\bvD \bvV{2}} \bvD$ não pode ser simplificado. Isso exigiria que $\bvV{2}$ tivesse linhas linearmente independentes, o que não é possível dado que $N > N-R$. %Outro fator importante é que o gradiente de $F(\bvmu)$ é tomado em relação a $\bvmu$. Isso implica que dentro do subespaço definido por $\bvV{2}$, o $\bvmu$ encontrado é ótimo, mas ao tomar o gradiente em relação a $\pinv{\bvR{i}} \bvt{\obs}$, esse gradiente não será $\bv0$.
+
+\subsection{Truncamento da SVD}
+\label{subsec:sec2:truncamento}
+
+Outra possibilidade é truncar $\bvSi$, ou definir arbitrariamente um número das menores entradas diagonais de $\bvSi$ como zero. Esse procedimento simultaneamente: reduz o número de condicionamento efetivo (razão entre os maiores e menores valores singulares não-nulos), melhorando a estabilidade no problema de inversão da minimização da métrica primária; aumenta o espaço-nulo prático de $\bvSi$, permitindo que a métrica secundária --- aqui, o Laplaciano --- seja minimizada de forma mais agressiva. Em contrapartida, o truncamento introduz algum erro na minimização primária, fazendo com que o mínimo encontrado não possua gradiente realmente nulo.
+
+Denotamos $\bvSi[t]{\tilde{R}}$ como uma $\bvSi$ truncada com apenas suas primeiras $\tilde{R}$ entradas diagonais não nulas; isto é, $N-\tilde{R}$ de suas entradas diagonais são zero, e $R-\tilde{R}$ foram forçadas a zero na aproximação. Trivialmente, $\tilde{R} \leq R$ para que isso seja válido. Dado esse truncamento, é fácil verificar que
+\begin{equation}
+	\begin{split}
+		\bvG(\bvs{i}) & \approx \bvG[t](\bvs{i}) \\
+		& = \bvV \pinv{\bvSi[t]{\tilde{R}}} \bvU[T]
+	\end{split}
+\end{equation}
+é a solução ótima para o problema de minimização com $\bvSi[t]{\tilde{R}}$. O gradiente para uma solução usando esse $\bvG[t]{i}$ é
+\begin{equation}
+	\begin{split}
+		\nabla E(\bvs{i+1})
+		& = 2\pts{\bvV \bvSi[T] \bvU[T] \bvU \bvSi \bvV[T] \bvV \pinv{\bvSi[t]} \bvU[T] \bvt{\obs} - \bvV \bvSi[T] \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bvSi \pinv{\bvSi[t]} \bvU[T] \bvt{\obs} - \bvV \bvSi[T] \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\bvV \bvSi[T] \bts{\Id{M;\tilde{R}} - \Id{M}} \bvU[T] \bvt{\obs}} \\
+		& = 2\pts{\sum_{i=\tilde{R}+1}^{R} \sigma_i \bvv{i} \bvu[T]{i}} \bvt{\obs}
+	\end{split}
+\end{equation}
+onde $\bvv{i}$ e $\bvu{i}$ são a $i$-ésima linha de $\bvV$ e $\bvU$, respectivamente, e $\sigma_i$ é o $i$-ésimo elemento diagonal de $\bvSi$. Quanto menores forem as entradas de $\bvSi$ que foram definidas como zero ($\sigma_i$ para $i \in [\tilde{R}+1,~R]$), menor será o gradiente, e mais próxima a solução obtida estará do espaço de soluções ótimas ($\nabla E = 0$).
+
+Destacamos que $\bvSi[t] \bvV[T] \bvV{2} \bvmu$ ainda é uma matriz nula, dado que $\bvV[T]{1} \bvV{2} = \bv0$ e $\pts{\bvV[T]{2} \bvV{2}} \in \nul{\bvSi} \subseteq \nul{\bvSi[t]}$. Com isso, as \cref{eq:sec2:definition_mu_full,eq:sec2:definition_zi+1_with_mu} continuam válidas, exceto pela substituição de ${\bvSi}$ por ${\bvSi[t]}$; e as propriedades de $\bvmu$ de não afetar nem a função-custo nem o gradiente permanecem válidas.
+
+Com a formulação anterior, a função-custo com a SVD truncada será
+\begin{equation}
+	E(\bvs{i+1}) = \bvt[T]{\obs} \bvU{-\tilde{R}} \bvU[T]{-\tilde{R}} \bvt{\obs}
+\end{equation}
+ou ainda, a variação na função-custo, comparada àquela sem valores singulares truncados, é dada por
+\begin{equation}
+	\Delta E(\bvs{i+1}) = \bvt[T]{\obs}  \bvU{\tilde{R}\sim R} \bvU[T]{\tilde{R}\sim R} \bvt{\obs}
+\end{equation}
+onde as colunas de $\bvU{\tilde{R} \sim R}$ são exatamente as colunas correspondentes aos valores singulares truncados.
+
+Note que esse erro $\Delta E$ é independente dos valores singulares truncados. Portanto, a escolha dos $\lambda$ a serem truncados não está relacionada ao aumento da função-custo. A escolha de quais valores singulares truncar determinará a matriz $\bvU{\tilde{R}\sim R}$ que define $\Delta E$, mas as magnitudes dos valores singulares não são relevantes.
+
+\subsection{Outras ideias propostas}
+
+Esta seção reúne outras ideias propostas que não estão diretamente ligadas à SVD, mas também não são abordadas na literatura apresentada, e que podem resultar em contribuições úteis.
+
+\subsubsection{Minimização ponderada}
+
+Nos métodos apresentados anteriormente, assume-se que todas as medições são igualmente importantes. Entretanto, esse pode não ser o caso. Como exemplo, considere que algumas das medições foram realizadas quando o corpo d’água estava sendo perturbado por correntes fortes, afetando a posição dos sensores e a velocidade do som percebida na água. Essas medições ainda são úteis, mas seus dados são sabidamente (\textit{a priori}) menos precisos e confiáveis do que os de outras medições, e portanto um passo de ponderação para essas medições pode ser adotado.
+
+Matematicamente, isso é modelado adaptando \cref{eq:sec2:def_minimization_bvz}. Essa equação pode ser expandida e escrita como
+\begin{equation}
+	\bvs{i+1} = \arg \min_{\bvs} \sum_{i=1}^{M} \pts{\bvR[T]{m,i} \bvs - t_{\obs;m}}^2
+\end{equation}
+na qual $\bvR{m,i}$ é a distância percorrida em cada $i$-ésima célula pelo $m$-ésimo raio, e $t_{\obs;m}$ é o tempo total de percurso observado para o $m$-ésimo raio. Com essa formulação, um passo de ponderação pode ser facilmente adicionado, resultando em
+\begin{equation}
+	\bvs{i+1} = \arg \min_{\bvs} \sum_{i=1}^{M} w_i \pts{\bvR[T]{m,i} \bvs - t_{\obs;m}}^2
+\end{equation}
+onde $w_i > 0$ é o peso da $i$-ésima medição. Retornando à formulação matricial, obtemos
+\begin{equation}
+	\bvs{i+1} = \arg \min_{\bvs} \norm{\bvW \pts{\bvR{i} \bvs - \bvt{\obs}}}^2
+\end{equation}
+onde $\bvW$ é uma matriz diagonal tal que $\el{\bvW}[i,i] = \sqrt{w_i}$. Utilizando a abordagem baseada em SVD e pseudo-inversa já estabelecida, a solução para essa minimização é
+\begin{equation}
+	\bvG{i} = \pinv*{\bvW \bvR{i}} \bvW
+	\label{eq:sec3:Gi_weighted_minim}
+\end{equation}
+
+Em geral, essa formulação não pode ser simplificada, considerando que $\bvR{i}$ é uma matriz alta, apresentando dependência linear entre suas linhas. Essa formulação também pode ser posteriormente utilizada com a minimização secundária e truncamento do SVD, como nas \cref{subsec:sec2:minim_secundaria,subsec:sec2:truncamento}.
+
+\subsubsection{Super-modelagem espacial}
+\label{subsec:spatial_under-over-_modeling}
+
+Embora cenários em que $M > N$ (mais medições do que células discretas) sejam de interesse prático, isso exige uma grande distribuição de dispositivos, podendo não ser viável na prática. Portanto, a análise da teoria em cenários super-modelados (mais variáveis de modelo do que medições) pode ser útil para casos em que a resolução espacial nas células é mais fina do que a resolução física produzida pela distribuição dos dispositivos.
+
+Em um cenário em que $M < N$, temos $\rank{\bvR[T]{i} \bvR{i}} = \rank{\bvR{i}} = R \leq M$, e como $\bvR[T]{i} \bvR{i} \in \re^{\sz{N}{N}}$, o produto é uma matriz deficiente em posto, sendo portanto garantidamente não invertível. Para o método padrão estabelecido na literatura (\cref{subsec:sec2:standard_ttt_approach}), isso força o uso de uma matriz de regularização ou o uso de solucionadores de gradiente nulo sem inversão. Para a inversão baseada em SVD proposta, destaca-se que inclusive assume-se que $R < \min(M,N)$. Para a estrutura proposta, $M < N$ garante que $N-R > 0$, e com isso a existência de espaço-nulo para $\bvR{i}$, assegurando a possibilidade de uma minimização em $\mu$ por meio da etapa proposta de exploração do espaço-nulo.
+
+A formulação obtida anteriormente (das \cref{eq:sec2:solution-G_pseudo-inverse,eq:sec2:solution-G_pseudo-inverse_shortform}) permanece válida. O fato de $R$ poder ser igual a $M$ não altera o arcabouço proposto, pois no máximo $\Id{M;R} = \Id$ se $R = M$, e o gradiente continua sendo igual a $\bv0$. Os processos de exploração do espaço-nulo, minimização da métrica secundária e truncamento da SVD funcionam exatamente da mesma forma, mas com garantia da existência de $\nul{\bvR{i}}$.
+
+Assumindo $R = M < N$, então $\bvU{-R} = []_{\sz{0}{M}}$ é um vetor vazio e, portanto, por meio de \cref{eq:sec2:cost_func_explicit_svd} temos $E(\bvs{i+1}) = 0$. Isso significa que, se todas as medições forem linearmente independentes ($R=M$), é possível alcançar erro zero nos tempos medidos. Para medições linearmente dependentes, podem existir erros em caso de inconsistências nos valores medidos. Para a minimização ponderada, a independência linear nas linhas de $\bvR{i}$ implica que \cref{eq:sec3:Gi_weighted_minim} pode ser simplificada para $\pinv{\bvR{i}}$. Intuitivamente, isso corresponde a haver mais do que informação suficiente para o processo de minimização, e atribuir pesos diferentes às medições não afeta o resultado.
+
+\subsubsection{Modelagem por perturbação}
+
+Agora assumimos que a lentidão $\bvs{i}$ é composta por um termo constante $\bvs{\obs}$ (conhecido) e um termo de perturbação $\bvs[t]{i}$, como
+\begin{equation}
+	\bvs{i} = \bvs{\obs} + \bvs[t]{i}
+\end{equation}
+
+Com isso,
+\begin{equation}
+	\begin{split}
+		\bvs{i+1}
+		& = \arg \min_{\bvs} \norm{\bvR{i} \bvs - \bvt{\obs}}^2 \\
+		& = \arg \min_{\bvs[t]} \norm{\bvR{i} \bvs[t] - \pts{\bvt{\obs} - \bvR{i}\bvs{\obs}}}^2
+	\end{split}
+\end{equation}
+cuja solução é
+\begin{equation}
+	\bvs{i+1} =  \pinv{\bvR{i}} \bvt{\obs} - \bvV{2}\bvV[T]{2} \bvs{\obs}
+	\label{eq:sec4:bvz_perturbation_model}
+\end{equation}
+onde $\bvV{2}$ são as últimas $R$ colunas de $\bvV$ correspondentes ao espaço-nulo de $\bvR{i}$ (ver \cref{subsec:sec3:null-space_exploitation}).
+
+Comparando com a \cref{eq:sec2:definition_zi+1_with_mu}, temos que essas formulações são muito semelhantes, com $\bvD = \Id$ e (supondo que) $\pinv{\bvR{i}} \bvt{\obs} = \bvs{\obs}$. Observe que o termo constante $\bvs{\obs}$ não precisa ser uniforme em todo o corpo d’água e poderia ser construído tomando a média em seções do corpo d’água a partir de medições e estimativas anteriores.
+
+\subsubsection{Regularização}
+
+A modelagem por perturbação também pode ser combinada com um termo de regularização. Essa regularização pode ser escolhida sobre o modelo de lentidão $\bvs{i+1}$ ou sobre o vetor de perturbação $\bvs[t]{i}$. Para o primeiro caso (regularização na lentidão), temos
+\begin{equation}
+	\bvs{i+1} = \arg\min_{\bvs[t]} \norm{\bvR{i} \bvs[t] - \pts{\bvt{\obs} - \bvR{i} \bvs{\obs}}}^2 + \alpha^2\norm{\bvD \pts{\bvs[t] + \bvs{\obs}}}^2 
+\end{equation}
+cuja solução é dada por
+\begin{subequations}
+	\begin{gather}
+		\bvs[t]{i+1} = \inv*{\bvR[T]{i} \bvR{i} + \alpha^2 \bvD[T] \bvD} \bvR[T] \bvt{\obs} - \bvs{\obs} \\
+		\bvs{i+1} = \inv*{\bvR[T]{i} \bvR{i} + \alpha^2 \bvD[T] \bvD} \bvR[T] \bvt{\obs}
+	\end{gather}
+\end{subequations}
+o que leva à mesma solução obtida ao usar a regularização tradicional em \cref{eqs:sec2:iterative_minimization_Ezi}, sem a etapa de modelagem por perturbação.
+
+Para o segundo caso (regularização na perturbação), a formulação é
+\begin{equation}
+	\bvs{i+1} = \arg\min_{\bvs[t]} \norm{\bvR{i} \bvs[t] - \pts{\bvt{\obs} - \bvR{i} \bvs{\obs}}}^2 + \alpha^2\norm{\bvD \pts{\bvs[t]}}^2 
+	\label{eq:sec3:minimization_perturbation-with-regularization_formulation}
+\end{equation}
+o que resulta em
+\begin{subequations}
+	\begin{gather}
+		\bvs[t]{i+1} = \inv*{\bvR[T]{i} \bvR{i} + \alpha^2 \bvD[T] \bvD} \pts{\bvR[T]{i} \bvt{\obs} - \bvR[T]{i} \bvR{i} \bvs{\obs}} \\
+		\bvs{i+1} = \inv*{\bvR[T]{i} \bvR{i} + \alpha^2 \bvD[T] \bvD} \bvt{\obs} + \pts{\Id{N} - \inv*{\bvR[T]{i} \bvR{i} + \alpha^2 \bvD[T] \bvD} \bvR[T]{i} \bvR{i}} \bvs{\obs}
+	\end{gather}
+\end{subequations}
+
+O primeiro termo aqui é idêntico à solução do problema original de regularização em \cref{eqs:sec2:iterative_minimization_Ezi}, e o segundo fornece uma correção que penaliza desvios em relação ao termo constante.
+
+\subsubsection{Exploração do espaço-nulo}
+
+Embora essa formulação baseada em perturbação sobre o comportamento médio possa ser útil, sua aplicação combinada com a exploração do espaço-nulo proposta tornaria a modelagem por perturbação inútil, dado que $\bvV{2}\bvV[T]{2} \bvs{\obs}$ pertence ao espaço-nulo de $\bvR{i}$, e esse termo seria descartado\footnote{Por definição, a minimização secundária percorre o espaço-nulo de $\bvR{i}$ buscando um mínimo na métrica secundária, e a adição do termo $\bvV{2}\bvV[T]{2} \bvs{\obs}$ apenas deslocaria a solução por esse valor, cancelando-se com sua adição na \cref{eq:sec4:bvz_perturbation_model}.} no processo de minimização para qualquer métrica secundária dada.
+
+Matematicamente, \cref{eq:sec3:cost_function_mu} com \cref{eq:sec4:bvz_perturbation_model} resulta em
+\begin{equation}
+	F(\bvmu) = \norm{\pinv{\bvR{i}} \bvt{\obs} - \bvV{2}\bvV[T]{2} \bvs{\obs} + \bvV{2} \bvmu}^2
+\end{equation}
+cuja minimização leva a
+\begin{equation}
+	\begin{split}
+		\bvmu
+		& = \inv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \bvV{2} \bvV[T]{2} \bvs{\obs} - \pinv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvR{i}} \bvt{\obs} \\
+		& = \bvV[T]{2} \bvs{\obs} - \inv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvR{i}} \bvt{\obs}
+	\end{split}
+\end{equation}
+onde a inversa é tomada pois tanto $\bvV{2}$ quanto $\bvD$ são matrizes de posto completo, por definição. A partir disso,
+\begin{equation}
+	\begin{split}
+		\bvs{i+1}
+		& = \pinv{\bvR{i}} \bvt{\obs} - \bvV{2}\bvV[T]{2} \bvs{\obs} + \bvV{2} \bvV[T]{2} \bvs{\obs} - \inv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvR{i}} \bvt{\obs} \\
+		& = \pinv{\bvR{i}} \bvt{\obs} - \inv*{\bvV[T]{2} \bvD[T] \bvD \bvV{2}} \bvV[T]{2} \bvD[T] \bvD \pinv{\bvR{i}} \bvt{\obs}
+	\end{split}
+\end{equation}
+o que é idêntico a \cref{eq:sec2:definition_zi+1_with_mu}, após algumas manipulações algébricas e uso apropriado da pseudo-inversa. Portanto, a aplicação de uma etapa de minimização secundária anula os efeitos da modelagem por perturbação.
